@@ -13,6 +13,7 @@ import {
   createAppointment,
   updateAppointment,
 } from "@/lib/actions/appointment.actions";
+import { isDoctorAvailable } from "@/lib/actions/availability.actions";
 import { getAppointmentSchema } from "@/lib/validation";
 import { Appointment } from "@/types/appwrite.types";
 
@@ -21,6 +22,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
 import { Form } from "../ui/form";
+import { TimeSlotPicker } from "../TimeSlotPicker";
 
 export const AppointmentForm = ({
   userId,
@@ -37,6 +39,9 @@ export const AppointmentForm = ({
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedDoctor, setSelectedDoctor] = useState<string>("");
 
   const AppointmentFormValidation = getAppointmentSchema(type);
 
@@ -72,11 +77,30 @@ export const AppointmentForm = ({
 
     try {
       if (type === "create" && patientId) {
+        // Validate availability before creating appointment
+        const appointmentDateTime = new Date(values.schedule);
+        
+        if (selectedDoctor && selectedTime) {
+          const [hours, minutes] = selectedTime.split(":");
+          appointmentDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+          
+          const isAvailable = await isDoctorAvailable(
+            values.primaryPhysician,
+            appointmentDateTime
+          );
+
+          if (!isAvailable) {
+            alert("This time slot is no longer available. Please select another time.");
+            setIsLoading(false);
+            return;
+          }
+        }
+
         const appointment = {
           userId,
           patient: patientId,
           primaryPhysician: values.primaryPhysician,
-          schedule: new Date(values.schedule),
+          schedule: appointmentDateTime,
           reason: values.reason!,
           status: status as Status,
           note: values.note,
@@ -148,6 +172,10 @@ export const AppointmentForm = ({
               name="primaryPhysician"
               label="Doctor"
               placeholder="Select a doctor"
+              onChange={(value) => {
+                setSelectedDoctor(value);
+                setSelectedTime(""); // Reset time when doctor changes
+              }}
             >
               {Doctors.map((doctor, i) => (
                 <SelectItem key={doctor.name + i} value={doctor.name}>
@@ -170,9 +198,32 @@ export const AppointmentForm = ({
               control={form.control}
               name="schedule"
               label="Expected appointment date"
-              showTimeSelect
-              dateFormat="MM/dd/yyyy  -  h:mm aa"
+              showTimeSelect={false}
+              dateFormat="MM/dd/yyyy"
+              onChange={(date) => {
+                setSelectedDate(date);
+                setSelectedTime(""); // Reset time when date changes
+              }}
             />
+
+            {/* Time Slot Picker - Only show for create type */}
+            {type === "create" && selectedDoctor && selectedDate && (
+              <div className="mb-6">
+                <TimeSlotPicker
+                  doctorName={selectedDoctor}
+                  selectedDate={selectedDate}
+                  selectedTime={selectedTime}
+                  onSelectTime={(time) => {
+                    setSelectedTime(time);
+                    // Update the form schedule value with the selected time
+                    const dateTime = new Date(selectedDate);
+                    const [hours, minutes] = time.split(":");
+                    dateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                    form.setValue("schedule", dateTime);
+                  }}
+                />
+              </div>
+            )}
 
             <div
               className={`flex flex-col gap-6  ${type === "create" && "xl:flex-row"}`}

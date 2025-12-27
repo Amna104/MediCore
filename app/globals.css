@@ -348,3 +348,124 @@
 .PhoneInputInput::placeholder {
   color: #1a1d21;
 }
+
+/* ===== REACT BIG CALENDAR OVERRIDES */
+.doctor-calendar .rbc-calendar {
+  background: #1a1d21;
+  color: #eeeeee;
+  border: 1px solid #363a3d;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.doctor-calendar .rbc-header {
+  background: #131619;
+  border-bottom: 1px solid #363a3d;
+  padding: 12px 8px;
+  font-weight: 600;
+  color: #eeeeee;
+}
+
+.doctor-calendar .rbc-month-view,
+.doctor-calendar .rbc-time-view,
+.doctor-calendar .rbc-agenda-view {
+  background: #1a1d21;
+}
+
+.doctor-calendar .rbc-day-bg {
+  background: #1a1d21;
+  border-color: #363a3d;
+}
+
+.doctor-calendar .rbc-today {
+  background-color: rgba(36, 174, 124, 0.1);
+}
+
+.doctor-calendar .rbc-off-range-bg {
+  background: #131619;
+}
+
+.doctor-calendar .rbc-date-cell {
+  padding: 8px;
+  color: #eeeeee;
+}
+
+.doctor-calendar .rbc-off-range {
+  color: #76828d;
+}
+
+.doctor-calendar .rbc-toolbar {
+  padding: 16px;
+  background: #131619;
+  border-bottom: 1px solid #363a3d;
+}
+
+.doctor-calendar .rbc-toolbar button {
+  color: #eeeeee;
+  background: #1a1d21;
+  border: 1px solid #363a3d;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.doctor-calendar .rbc-toolbar button:hover {
+  background: #24ae7c;
+  border-color: #24ae7c;
+}
+
+.doctor-calendar .rbc-toolbar button.rbc-active {
+  background: #24ae7c;
+  border-color: #24ae7c;
+}
+
+.doctor-calendar .rbc-time-slot {
+  border-color: #363a3d;
+}
+
+.doctor-calendar .rbc-time-content {
+  border-color: #363a3d;
+}
+
+.doctor-calendar .rbc-time-header {
+  background: #131619;
+  border-color: #363a3d;
+}
+
+.doctor-calendar .rbc-timeslot-group {
+  border-color: #363a3d;
+}
+
+.doctor-calendar .rbc-time-gutter {
+  background: #131619;
+  border-color: #363a3d;
+}
+
+.doctor-calendar .rbc-label {
+  color: #eeeeee;
+}
+
+.doctor-calendar .rbc-current-time-indicator {
+  background-color: #24ae7c;
+}
+
+.doctor-calendar .rbc-agenda-view table {
+  border: 1px solid #363a3d;
+}
+
+.doctor-calendar .rbc-agenda-view thead tr {
+  background: #131619;
+}
+
+.doctor-calendar .rbc-agenda-view tbody tr {
+  border-color: #363a3d;
+}
+
+.doctor-calendar .rbc-agenda-date-cell,
+.doctor-calendar .rbc-agenda-time-cell {
+  color: #eeeeee;
+}
+
+.doctor-calendar .rbc-agenda-event-cell {
+  color: #eeeeee;
+}

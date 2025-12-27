@@ -40,6 +40,7 @@ interface CustomProps {
   children?: React.ReactNode;
   renderSkeleton?: (field: any) => React.ReactNode;
   fieldType: FormFieldType;
+  onChange?: (value: any) => void;
 }
 
 const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
@@ -119,10 +120,16 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
             <ReactDatePicker
               showTimeSelect={props.showTimeSelect ?? false}
               selected={field.value}
-              onChange={(date: Date) => field.onChange(date)}
+              onChange={(date: Date) => {
+                field.onChange(date);
+                if (props.onChange) {
+                  props.onChange(date);
+                }
+              }}
               timeInputLabel="Time:"
               dateFormat={props.dateFormat ?? "MM/dd/yyyy"}
               wrapperClassName="date-picker"
+              minDate={new Date()}
             />
           </FormControl>
         </div>
@@ -130,7 +137,15 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
     case FormFieldType.SELECT:
       return (
         <FormControl>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select
+            onValueChange={(value) => {
+              field.onChange(value);
+              if (props.onChange) {
+                props.onChange(value);
+              }
+            }}
+            defaultValue={field.value}
+          >
             <FormControl>
               <SelectTrigger className="shad-select-trigger">
                 <SelectValue placeholder={props.placeholder} />

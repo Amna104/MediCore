@@ -7,6 +7,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { generateAppointmentPDF, generateAllAppointmentsPDF } from "@/lib/pdf-generator";
 import { Button } from "@/components/ui/button";
+import { MedicalTimeline } from "@/components/MedicalTimeline";
+import { PrescriptionList } from "@/components/PrescriptionList";
+import { TestResults } from "@/components/TestResults";
 
 interface Appointment {
   $id: string;
@@ -25,11 +28,14 @@ interface Patient {
   phone: string;
 }
 
+type TabType = "overview" | "timeline" | "prescriptions" | "tests";
+
 export default function PatientDashboard({ params }: { params: { userId: string } }) {
   const router = useRouter();
   const [patient, setPatient] = useState<Patient | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabType>("overview");
 
   useEffect(() => {
     const fetchPatientData = async () => {
@@ -213,75 +219,131 @@ export default function PatientDashboard({ params }: { params: { userId: string 
             </p>
           </motion.div>
 
-          {/* Stats Cards */}
+          {/* Tabs Navigation */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
+            transition={{ delay: 0.05 }}
+            className="mb-6"
           >
-            <div className="stat-card bg-appointments">
-              <div className="flex items-center gap-4">
-                <Image
-                  src="/assets/icons/appointments.svg"
-                  height={32}
-                  width={32}
-                  alt="appointments"
-                  className="size-8 w-fit"
-                />
-                <h2 className="text-32-bold text-white">{appointments.length}</h2>
-              </div>
-              <p className="text-14-regular text-white mt-2">Total Appointments</p>
-            </div>
-
-            <div className="stat-card bg-pending">
-              <div className="flex items-center gap-4">
-                <Image
-                  src="/assets/icons/pending.svg"
-                  height={32}
-                  width={32}
-                  alt="pending"
-                  className="size-8 w-fit"
-                />
-                <h2 className="text-32-bold text-white">
-                  {appointments.filter((a) => a.status === "pending").length}
-                </h2>
-              </div>
-              <p className="text-14-regular text-white mt-2">Pending</p>
-            </div>
-
-            <div className="stat-card bg-appointments">
-              <div className="flex items-center gap-4">
-                <Image
-                  src="/assets/icons/check.svg"
-                  height={32}
-                  width={32}
-                  alt="scheduled"
-                  className="size-8 w-fit"
-                />
-                <h2 className="text-32-bold text-white">
-                  {appointments.filter((a) => a.status === "scheduled").length}
-                </h2>
-              </div>
-              <p className="text-14-regular text-white mt-2">Scheduled</p>
-            </div>
-
-            <div className="stat-card bg-cancelled">
-              <div className="flex items-center gap-4">
-                <Image
-                  src="/assets/icons/cancelled.svg"
-                  height={32}
-                  width={32}
-                  alt="cancelled"
-                  className="size-8 w-fit"
-                />
-                <h2 className="text-32-bold text-white">
-                  {appointments.filter((a) => a.status === "cancelled").length}
-                </h2>
-              </div>
-              <p className="text-14-regular text-white mt-2">Cancelled</p>
+            <div className="flex gap-2 border-b border-dark-500 overflow-x-auto">
+              <button
+                onClick={() => setActiveTab("overview")}
+                className={`px-6 py-3 text-14-semibold transition-all whitespace-nowrap ${
+                  activeTab === "overview"
+                    ? "text-green-500 border-b-2 border-green-500"
+                    : "text-dark-700 hover:text-light-200"
+                }`}
+              >
+                📊 Overview
+              </button>
+              <button
+                onClick={() => setActiveTab("timeline")}
+                className={`px-6 py-3 text-14-semibold transition-all whitespace-nowrap ${
+                  activeTab === "timeline"
+                    ? "text-green-500 border-b-2 border-green-500"
+                    : "text-dark-700 hover:text-light-200"
+                }`}
+              >
+                📅 Medical History
+              </button>
+              <button
+                onClick={() => setActiveTab("prescriptions")}
+                className={`px-6 py-3 text-14-semibold transition-all whitespace-nowrap ${
+                  activeTab === "prescriptions"
+                    ? "text-green-500 border-b-2 border-green-500"
+                    : "text-dark-700 hover:text-light-200"
+                }`}
+              >
+                💊 Prescriptions
+              </button>
+              <button
+                onClick={() => setActiveTab("tests")}
+                className={`px-6 py-3 text-14-semibold transition-all whitespace-nowrap ${
+                  activeTab === "tests"
+                    ? "text-green-500 border-b-2 border-green-500"
+                    : "text-dark-700 hover:text-light-200"
+                }`}
+              >
+                🔬 Test Results
+              </button>
             </div>
           </motion.div>
+
+          {/* Tab Content */}
+          {activeTab === "overview" && (
+            <>
+              {/* Stats Cards */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
+              >
+                <div className="stat-card bg-appointments">
+                  <div className="flex items-center gap-4">
+                    <Image
+                      src="/assets/icons/appointments.svg"
+                      height={32}
+                      width={32}
+                      alt="appointments"
+                      className="size-8 w-fit"
+                    />
+                    <h2 className="text-32-bold text-white">{appointments.length}</h2>
+                  </div>
+                  <p className="text-14-regular text-white mt-2">Total Appointments</p>
+                </div>
+
+                <div className="stat-card bg-pending">
+                  <div className="flex items-center gap-4">
+                    <Image
+                      src="/assets/icons/pending.svg"
+                      height={32}
+                      width={32}
+                      alt="pending"
+                      className="size-8 w-fit"
+                    />
+                    <h2 className="text-32-bold text-white">
+                      {appointments.filter((a) => a.status === "pending").length}
+                    </h2>
+                  </div>
+                  <p className="text-14-regular text-white mt-2">Pending</p>
+                </div>
+
+                <div className="stat-card bg-appointments">
+                  <div className="flex items-center gap-4">
+                    <Image
+                      src="/assets/icons/check.svg"
+                      height={32}
+                      width={32}
+                      alt="scheduled"
+                      className="size-8 w-fit"
+                    />
+                    <h2 className="text-32-bold text-white">
+                      {appointments.filter((a) => a.status === "scheduled").length}
+                    </h2>
+                  </div>
+                  <p className="text-14-regular text-white mt-2">Scheduled</p>
+                </div>
+
+                <div className="stat-card bg-cancelled">
+                  <div className="flex items-center gap-4">
+                    <Image
+                      src="/assets/icons/cancelled.svg"
+                      height={32}
+                      width={32}
+                      alt="cancelled"
+                      className="size-8 w-fit"
+                    />
+                    <h2 className="text-32-bold text-white">
+                      {appointments.filter((a) => a.status === "cancelled").length}
+                    </h2>
+                  </div>
+                  <p className="text-14-regular text-white mt-2">Cancelled</p>
+                </div>
+              </motion.div>
+            </>
+          )}
 
           {/* Upcoming Appointments */}
           <motion.div
@@ -466,6 +528,160 @@ export default function PatientDashboard({ params }: { params: { userId: string 
                   </div>
                 ))}
               </div>
+            </motion.div>
+          )}
+
+          {/* Medical Timeline Tab */}
+          {activeTab === "timeline" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <h2 className="sub-header mb-5">Medical History Timeline</h2>
+              <MedicalTimeline
+                entries={[
+                  ...appointments.map((apt) => ({
+                    date: new Date(apt.schedule),
+                    type: "appointment" as const,
+                    title: `Appointment with Dr. ${apt.primaryPhysician}`,
+                    description: apt.reason,
+                    doctorName: apt.primaryPhysician,
+                  })),
+                  // Mock data - replace with real data from your backend
+                  {
+                    date: new Date("2024-12-15"),
+                    type: "prescription" as const,
+                    title: "New Prescription",
+                    description: "Prescribed Amoxicillin 500mg for bacterial infection",
+                    doctorName: "Dr. Smith",
+                  },
+                  {
+                    date: new Date("2024-12-10"),
+                    type: "test" as const,
+                    title: "Blood Test Results",
+                    description: "Complete Blood Count - All values normal",
+                    doctorName: "Dr. Johnson",
+                  },
+                ]}
+              />
+            </motion.div>
+          )}
+
+          {/* Prescriptions Tab */}
+          {activeTab === "prescriptions" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="sub-header">My Prescriptions</h2>
+                <div className="flex gap-2">
+                  <button className="text-12-medium text-dark-700 hover:text-light-200 px-3 py-1 rounded-lg bg-dark-400 border border-dark-500">
+                    All
+                  </button>
+                  <button className="text-12-medium text-dark-700 hover:text-light-200 px-3 py-1 rounded-lg bg-dark-400 border border-dark-500">
+                    Active
+                  </button>
+                  <button className="text-12-medium text-dark-700 hover:text-light-200 px-3 py-1 rounded-lg bg-dark-400 border border-dark-500">
+                    Completed
+                  </button>
+                </div>
+              </div>
+              <PrescriptionList
+                prescriptions={[
+                  // Mock data - replace with real data from your backend
+                  {
+                    $id: "1",
+                    medicationName: "Amoxicillin",
+                    dosage: "500mg",
+                    frequency: "3 times daily",
+                    duration: "7 days",
+                    instructions: "Take with food. Complete full course even if symptoms improve.",
+                    prescribedDate: new Date("2024-12-15"),
+                    doctorName: "John Green",
+                    status: "active",
+                  },
+                  {
+                    $id: "2",
+                    medicationName: "Ibuprofen",
+                    dosage: "400mg",
+                    frequency: "As needed",
+                    duration: "30 days",
+                    instructions: "Take for pain relief. Do not exceed 3 doses per day.",
+                    prescribedDate: new Date("2024-11-20"),
+                    doctorName: "Sarah Johnson",
+                    status: "completed",
+                  },
+                ]}
+              />
+            </motion.div>
+          )}
+
+          {/* Test Results Tab */}
+          {activeTab === "tests" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="sub-header">Test Results</h2>
+                <button className="text-14-regular text-green-500 hover:underline flex items-center gap-2">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Download All Results
+                </button>
+              </div>
+              <TestResults
+                testResults={[
+                  // Mock data - replace with real data from your backend
+                  {
+                    $id: "1",
+                    testName: "Complete Blood Count",
+                    testType: "Blood",
+                    result: "Normal",
+                    resultDate: new Date("2024-12-10"),
+                    normalRange: "WBC: 4,500-11,000 cells/mcL",
+                    notes: "All blood cell counts are within normal limits.",
+                    doctorName: "Michael Lee",
+                    status: "completed",
+                  },
+                  {
+                    $id: "2",
+                    testName: "Lipid Panel",
+                    testType: "Blood",
+                    result: "Borderline High",
+                    resultDate: new Date("2024-11-28"),
+                    normalRange: "Total Cholesterol: <200 mg/dL",
+                    notes: "Total cholesterol: 210 mg/dL. Consider dietary modifications and follow-up in 3 months.",
+                    doctorName: "Emily Davis",
+                    status: "abnormal",
+                  },
+                  {
+                    $id: "3",
+                    testName: "Chest X-Ray",
+                    testType: "XRay",
+                    result: "Clear",
+                    resultDate: new Date("2024-11-15"),
+                    notes: "No abnormalities detected. Lungs are clear.",
+                    doctorName: "John Green",
+                    status: "completed",
+                  },
+                ]}
+              />
             </motion.div>
           )}
         </main>
