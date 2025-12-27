@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { generateAppointmentPDF, generateAllAppointmentsPDF } from "@/lib/pdf-generator";
+import { Button } from "@/components/ui/button";
 
 interface Appointment {
   $id: string;
@@ -94,6 +96,61 @@ export default function PatientDashboard({ params }: { params: { userId: string 
     });
   };
 
+  const handleDownloadAppointment = (appointment: Appointment) => {
+    if (!patient) return;
+
+    const appointmentDate = new Date(appointment.schedule);
+    generateAppointmentPDF({
+      patientName: patient.name,
+      patientEmail: patient.email,
+      patientPhone: patient.phone,
+      doctorName: appointment.primaryPhysician,
+      appointmentDate: appointmentDate.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      appointmentTime: appointmentDate.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      reason: appointment.reason,
+      status: appointment.status,
+      note: appointment.note,
+      appointmentId: appointment.$id,
+    });
+  };
+
+  const handleDownloadAllAppointments = () => {
+    if (!patient || appointments.length === 0) return;
+
+    const appointmentData = appointments.map((apt) => {
+      const date = new Date(apt.schedule);
+      return {
+        patientName: patient.name,
+        patientEmail: patient.email,
+        patientPhone: patient.phone,
+        doctorName: apt.primaryPhysician,
+        appointmentDate: date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }),
+        appointmentTime: date.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        reason: apt.reason,
+        status: apt.status,
+        note: apt.note,
+        appointmentId: apt.$id,
+      };
+    });
+
+    generateAllAppointmentsPDF(appointmentData, patient.name);
+  };
+
   return (
     <div className="flex h-screen max-h-screen">
       {/* Main Content */}
@@ -110,7 +167,29 @@ export default function PatientDashboard({ params }: { params: { userId: string 
             />
           </Link>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {appointments.length > 0 && (
+              <Button
+                onClick={handleDownloadAllAppointments}
+                variant="outline"
+                className="shad-gray-btn rounded-full px-5 py-2 flex items-center gap-2"
+              >
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                Download All
+              </Button>
+            )}
             <Link
               href={`/patients/${params.userId}/new-appointment`}
               className="shad-primary-btn rounded-full px-6 py-2"
@@ -255,7 +334,7 @@ export default function PatientDashboard({ params }: { params: { userId: string 
                     key={appointment.$id}
                     className="rounded-2xl border border-dark-500 bg-dark-400 p-6 hover:border-green-500 transition-colors"
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600">
@@ -281,12 +360,35 @@ export default function PatientDashboard({ params }: { params: { userId: string 
                           </p>
                         )}
                       </div>
-                      <div
-                        className={`status-badge ${getStatusColor(appointment.status)}`}
-                      >
-                        <span className="text-12-semibold capitalize">
-                          {appointment.status}
-                        </span>
+                      <div className="flex flex-col items-end gap-3">
+                        <div
+                          className={`status-badge ${getStatusColor(appointment.status)}`}
+                        >
+                          <span className="text-12-semibold capitalize">
+                            {appointment.status}
+                          </span>
+                        </div>
+                        <Button
+                          onClick={() => handleDownloadAppointment(appointment)}
+                          variant="outline"
+                          size="sm"
+                          className="shad-gray-btn flex items-center gap-2"
+                        >
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                          PDF
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -309,7 +411,7 @@ export default function PatientDashboard({ params }: { params: { userId: string 
                     key={appointment.$id}
                     className="rounded-2xl border border-dark-500 bg-dark-400 p-6 opacity-75"
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-dark-500">
@@ -330,12 +432,35 @@ export default function PatientDashboard({ params }: { params: { userId: string 
                           <span className="text-light-200">Reason:</span> {appointment.reason}
                         </p>
                       </div>
-                      <div
-                        className={`status-badge ${getStatusColor(appointment.status)}`}
-                      >
-                        <span className="text-12-semibold capitalize">
-                          {appointment.status}
-                        </span>
+                      <div className="flex flex-col items-end gap-3">
+                        <div
+                          className={`status-badge ${getStatusColor(appointment.status)}`}
+                        >
+                          <span className="text-12-semibold capitalize">
+                            {appointment.status}
+                          </span>
+                        </div>
+                        <Button
+                          onClick={() => handleDownloadAppointment(appointment)}
+                          variant="outline"
+                          size="sm"
+                          className="shad-gray-btn flex items-center gap-2"
+                        >
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                          PDF
+                        </Button>
                       </div>
                     </div>
                   </div>
