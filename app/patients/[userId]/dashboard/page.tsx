@@ -689,7 +689,7 @@ export default function PatientDashboard({ params }: { params: { userId: string 
         {/* Footer */}
         <footer className="border-t border-dark-500 py-6 px-[5%]">
           <p className="text-14-regular text-dark-700 text-center">
-            © 2024 CarePulse. All rights reserved.
+            © 2025 CarePulse. All rights reserved.
           </p>
         </footer>
       </div>

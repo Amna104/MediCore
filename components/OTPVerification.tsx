@@ -312,7 +312,7 @@ export function OTPVerification({
 
             {/* Copyright */}
             <p className="copyright py-12 text-center">
-              © 2024 CarePulse. All rights reserved.
+              © 2025 CarePulse. All rights reserved.
             </p>
           </motion.div>
         </div>

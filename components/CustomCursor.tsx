@@ -1,94 +1,130 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export const CustomCursor = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isVisible, setIsVisible] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+
+  const springConfig = { damping: 25, stiffness: 700 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
+
   useEffect(() => {
-    const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+    // Check if device supports mouse
+    const hasMouseSupport = window.matchMedia("(pointer: fine)").matches;
+    setIsVisible(hasMouseSupport);
+
+    if (!hasMouseSupport) return;
+
+    const moveCursor = (e: MouseEvent) => {
+      cursorX.set(e.clientX - 24);
+      cursorY.set(e.clientY - 24);
     };
 
-    const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (
-        target.tagName === "BUTTON" ||
-        target.tagName === "A" ||
-        target.closest("button") ||
-        target.closest("a")
-      ) {
-        setIsHovering(true);
-      } else {
-        setIsHovering(false);
-      }
-    };
+    const handleMouseEnter = () => setIsHovering(true);
+    const handleMouseLeave = () => setIsHovering(false);
 
-    window.addEventListener("mousemove", updateMousePosition);
-    window.addEventListener("mouseover", handleMouseOver);
+    window.addEventListener("mousemove", moveCursor);
+
+    // Add hover detection for interactive elements
+    const interactiveElements = document.querySelectorAll(
+      "a, button, input, textarea, select, [role='button']"
+    );
+
+    interactiveElements.forEach((el) => {
+      el.addEventListener("mouseenter", handleMouseEnter);
+      el.addEventListener("mouseleave", handleMouseLeave);
+    });
 
     return () => {
-      window.removeEventListener("mousemove", updateMousePosition);
-      window.removeEventListener("mouseover", handleMouseOver);
+      window.removeEventListener("mousemove", moveCursor);
+      interactiveElements.forEach((el) => {
+        el.removeEventListener("mouseenter", handleMouseEnter);
+        el.removeEventListener("mouseleave", handleMouseLeave);
+      });
     };
-  }, []);
+  }, [cursorX, cursorY]);
+
+  if (!isVisible) return null;
 
   return (
     <>
-      {/* Outer ring - follows cursor with delay */}
+      {/* Main cursor ring */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9998]"
+        className="pointer-events-none fixed z-[9999] mix-blend-difference"
+        style={{
+          left: cursorXSpring,
+          top: cursorYSpring,
+        }}
+      >
+        <motion.div
+          className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500"
+          animate={{
+            scale: isHovering ? 1.3 : 1,
+            borderColor: isHovering ? "#79B5EC" : "#24AE7C",
+          }}
+          transition={{ duration: 0.2 }}
+        />
+      </motion.div>
+
+      {/* Trailing particle 1 */}
+      <motion.div
+        className="pointer-events-none fixed z-[9998] h-2 w-2 rounded-full bg-green-500"
+        style={{
+          left: cursorXSpring,
+          top: cursorYSpring,
+        }}
         animate={{
-          x: mousePosition.x - 24,
-          y: mousePosition.y - 24,
-          scale: isHovering ? 1.3 : 1,
+          x: 20,
+          y: 20,
         }}
         transition={{
           type: "spring",
-          damping: 20,
-          stiffness: 100,
-          mass: 0.8,
+          damping: 30,
+          stiffness: 200,
         }}
-      >
-        <div className="w-12 h-12 border-2 border-green-500 rounded-full opacity-50" />
-      </motion.div>
+      />
 
-      {/* Trailing particles */}
-      {[...Array(3)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="fixed top-0 left-0 pointer-events-none z-[9997]"
-          animate={{
-            x: mousePosition.x - 2,
-            y: mousePosition.y - 2,
-          }}
-          transition={{
-            type: "spring",
-            damping: 25,
-            stiffness: 150,
-            mass: 0.5 + i * 0.3,
-            delay: i * 0.02,
-          }}
-        >
-          <motion.div
-            className="w-1 h-1 rounded-full"
-            style={{
-              background: i % 2 === 0 ? "#24AE7C" : "#79B5EC",
-            }}
-            animate={{
-              opacity: [0.7, 0.3, 0.7],
-              scale: [1, 0.8, 1],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              delay: i * 0.2,
-            }}
-          />
-        </motion.div>
-      ))}
+      {/* Trailing particle 2 */}
+      <motion.div
+        className="pointer-events-none fixed z-[9997] h-2 w-2 rounded-full bg-blue-500"
+        style={{
+          left: cursorXSpring,
+          top: cursorYSpring,
+        }}
+        animate={{
+          x: 30,
+          y: 10,
+        }}
+        transition={{
+          type: "spring",
+          damping: 35,
+          stiffness: 180,
+        }}
+      />
+
+      {/* Trailing particle 3 */}
+      <motion.div
+        className="pointer-events-none fixed z-[9996] h-2 w-2 rounded-full bg-green-400"
+        style={{
+          left: cursorXSpring,
+          top: cursorYSpring,
+        }}
+        animate={{
+          x: 10,
+          y: 30,
+        }}
+        transition={{
+          type: "spring",
+          damping: 40,
+          stiffness: 160,
+        }}
+      />
     </>
   );
 };

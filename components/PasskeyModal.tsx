@@ -21,13 +21,14 @@ import {
 import { decryptKey, encryptKey } from "@/lib/utils";
 
 interface PasskeyModalProps {
+  isOpen?: boolean;
   onClose?: () => void;
 }
 
-export const PasskeyModal = ({ onClose }: PasskeyModalProps = {}) => {
+export const PasskeyModal = ({ isOpen = false, onClose }: PasskeyModalProps = {}) => {
   const router = useRouter();
   const path = usePathname();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(isOpen);
   const [passkey, setPasskey] = useState("");
   const [error, setError] = useState("");
 
@@ -35,6 +36,10 @@ export const PasskeyModal = ({ onClose }: PasskeyModalProps = {}) => {
     typeof window !== "undefined"
       ? window.localStorage.getItem("accessKey")
       : null;
+
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
 
   useEffect(() => {
     // Only auto-redirect if we're on a page that expects admin access (like /patient?admin=true)

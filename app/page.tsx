@@ -1,493 +1,826 @@
 "use client";
 
+import { motion, useInView } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
 import { PasskeyModal } from "@/components/PasskeyModal";
-import { CustomCursor } from "@/components/CustomCursor";
 
-export default function LandingPage() {
+// Animation variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const fadeInLeft = {
+  hidden: { opacity: 0, x: -50 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const fadeInRight = {
+  hidden: { opacity: 0, x: 50 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1 },
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+};
+
+const features = [
+  {
+    title: "Easy Appointment Booking",
+    description: "Schedule appointments with verified doctors at your convenience. Real-time availability and instant confirmation.",
+    icon: "calendar",
+  },
+  {
+    title: "Secure Medical Records",
+    description: "Access your complete medical history anytime, anywhere. Industry-standard encryption keeps your data safe.",
+    icon: "medical",
+  },
+  {
+    title: "Smart Notifications",
+    description: "Never miss an appointment with SMS and email reminders. Get real-time updates on your healthcare journey.",
+    icon: "notification",
+  },
+  {
+    title: "Admin Dashboard",
+    description: "Powerful tools for healthcare providers. Manage appointments, patients, and schedules efficiently.",
+    icon: "dashboard",
+  },
+  {
+    title: "Document Management",
+    description: "Securely upload and store medical documents. Easy access to prescriptions, test results, and reports.",
+    icon: "document",
+  },
+  {
+    title: "24/7 Accessibility",
+    description: "Access your healthcare portal anytime. Responsive design works seamlessly across all devices.",
+    icon: "access",
+  },
+];
+
+const doctors = [
+  { name: "Dr. John Green", initials: "JG", specialty: "Cardiologist", experience: "15+ years" },
+  { name: "Dr. Leila Cameron", initials: "LC", specialty: "Pediatrician", experience: "12+ years" },
+  { name: "Dr. David Livingston", initials: "DL", specialty: "Orthopedic Surgeon", experience: "18+ years" },
+  { name: "Dr. Evan Peter", initials: "EP", specialty: "Neurologist", experience: "14+ years" },
+  { name: "Dr. Jane Powell", initials: "JP", specialty: "Dermatologist", experience: "10+ years" },
+  { name: "Dr. Alex Ramirez", initials: "AR", specialty: "General Practitioner", experience: "16+ years" },
+  { name: "Dr. Jasmine Lee", initials: "JL", specialty: "Ophthalmologist", experience: "11+ years" },
+  { name: "Dr. Alyana Cruz", initials: "AC", specialty: "Gynecologist", experience: "13+ years" },
+];
+
+const testimonials = [
+  {
+    name: "Sarah Anderson",
+    role: "Regular Patient",
+    quote: "CarePulse has transformed how I manage my family's healthcare. The platform is intuitive, and the doctors are exceptional.",
+    rating: 5,
+  },
+  {
+    name: "Michael Chen",
+    role: "Healthcare Professional",
+    quote: "As a physician, I appreciate the efficiency of CarePulse. It streamlines appointment management and improves patient care.",
+    rating: 5,
+  },
+  {
+    name: "Emily Rodriguez",
+    role: "Working Mother",
+    quote: "Booking appointments is now effortless. The SMS reminders ensure I never miss important checkups for my children.",
+    rating: 5,
+  },
+];
+
+const faqs = [
+  {
+    question: "How do I book an appointment?",
+    answer: "Creating an appointment is simple. Register on our platform, browse available doctors by specialty, select your preferred time slot, and confirm. You'll receive instant confirmation via SMS and email.",
+  },
+  {
+    question: "Is my medical information secure?",
+    answer: "Yes, absolutely. We employ industry-standard encryption and secure cloud storage through Appwrite. Your data is protected with enterprise-grade security measures and is fully HIPAA compliant.",
+  },
+  {
+    question: "Do you accept insurance?",
+    answer: "Yes, we work with most major insurance providers. During registration, you can provide your insurance information, and we'll verify coverage for your appointments.",
+  },
+  {
+    question: "What if I need emergency care?",
+    answer: "For medical emergencies, please call 911 or visit your nearest emergency room immediately. CarePulse is designed for scheduled appointments and non-emergency healthcare services.",
+  },
+];
+
+export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [showPasskeyModal, setShowPasskeyModal] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Refs for scroll animations
   const featuresRef = useRef(null);
   const doctorsRef = useRef(null);
-  const howItWorksRef = useRef(null);
   const testimonialsRef = useRef(null);
   const faqRef = useRef(null);
   const ctaRef = useRef(null);
-  
+
   const isFeaturesInView = useInView(featuresRef, { once: true, amount: 0.2 });
   const isDoctorsInView = useInView(doctorsRef, { once: true, amount: 0.2 });
-  const isHowItWorksInView = useInView(howItWorksRef, { once: true, amount: 0.2 });
   const isTestimonialsInView = useInView(testimonialsRef, { once: true, amount: 0.2 });
   const isFaqInView = useInView(faqRef, { once: true, amount: 0.2 });
-  const isCtaInView = useInView(ctaRef, { once: true, amount: 0.5 });
+  const isCtaInView = useInView(ctaRef, { once: true, amount: 0.3 });
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+  const scrollToFeatures = (e: React.MouseEvent) => {
+    e.preventDefault();
+    document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const fadeInLeft = {
-    hidden: { opacity: 0, x: -50 },
-    visible: { opacity: 1, x: 0 }
-  };
-
-  const fadeInRight = {
-    hidden: { opacity: 0, x: 50 },
-    visible: { opacity: 1, x: 0 }
-  };
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
+  const renderIcon = (iconName: string) => {
+    const iconClass = "h-8 w-8";
+    
+    switch (iconName) {
+      case "calendar":
+        return (
+          <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        );
+      case "medical":
+        return (
+          <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        );
+      case "notification":
+        return (
+          <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+        );
+      case "dashboard":
+        return (
+          <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        );
+      case "document":
+        return (
+          <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+        );
+      case "access":
+        return (
+          <svg className={iconClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+        );
+      default:
+        return null;
     }
   };
 
-  const scaleIn = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1 }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-dark-200 via-dark-300 to-dark-400">
-      <CustomCursor />
-      {showPasskeyModal && <PasskeyModal onClose={() => setShowPasskeyModal(false)} />}
-      {/* Navigation */}
-      <motion.nav 
-        className="fixed top-0 z-50 w-full border-b"
+    <>
+      {/* Navigation Bar */}
+      <motion.nav
         initial={{ y: -100 }}
-        animate={{ 
-          y: 0,
-          backgroundColor: scrolled ? "rgba(13, 15, 16, 0.95)" : "rgba(13, 15, 16, 0.8)",
-          borderColor: scrolled ? "rgba(54, 58, 61, 1)" : "rgba(54, 58, 61, 0.5)"
-        }}
-        transition={{ duration: 0.3 }}
-        style={{ backdropFilter: "blur(12px)" }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5 }}
+        className={`fixed top-0 z-50 w-full border-b transition-all duration-300 ${
+          scrolled
+            ? "border-dark-500/50 bg-dark-300/95 backdrop-blur-xl shadow-lg"
+            : "border-transparent bg-transparent"
+        }`}
       >
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <motion.div 
-              className="flex items-center gap-2"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/assets/icons/logo-full.svg"
+              height={32}
+              width={162}
+              alt="CarePulse"
+              className="h-8 w-fit"
+            />
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden items-center gap-8 md:flex">
+            <Link
+              href="/dashboard"
+              className="text-sm font-medium text-light-200 transition-colors hover:text-green-500"
             >
-              <Link href="/" className="cursor-pointer">
-                <Image
-                  src="/assets/icons/logo-full.svg"
-                  height={32}
-                  width={160}
-                  alt="CarePulse"
-                  className="h-8 w-auto hover:opacity-80 transition-opacity"
+              Patient Portal
+            </Link>
+            <button
+              onClick={() => setShowPasskeyModal(true)}
+              className="text-sm font-medium text-light-200 transition-colors hover:text-green-500"
+            >
+              Admin Access
+            </button>
+            <Link
+              href="/patient"
+              className="rounded-lg bg-green-500 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-green-600 hover:shadow-lg"
+            >
+              Book Appointment
+            </Link>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden"
+            aria-label="Toggle menu"
+          >
+            <svg
+              className="h-6 w-6 text-light-200"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {mobileMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
                 />
-              </Link>
-            </motion.div>
-            <motion.div 
-              className="flex items-center gap-4"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="border-t border-dark-500 bg-dark-300 md:hidden"
+          >
+            <div className="flex flex-col gap-4 px-4 py-6">
               <Link
                 href="/dashboard"
-                className="text-14-medium text-dark-700 hover:text-light-200 transition-colors"
+                className="text-sm font-medium text-light-200 transition-colors hover:text-green-500"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                Dashboard
+                Patient Portal
               </Link>
               <button
-                onClick={() => setShowPasskeyModal(true)}
-                className="text-14-medium text-dark-700 hover:text-light-200 transition-colors cursor-pointer"
+                onClick={() => {
+                  setShowPasskeyModal(true);
+                  setMobileMenuOpen(false);
+                }}
+                className="text-left text-sm font-medium text-light-200 transition-colors hover:text-green-500"
               >
-                Admin
+                Admin Access
               </button>
               <Link
                 href="/patient"
-                className="shad-primary-btn rounded-full px-6 py-2 text-14-medium hover:scale-105 transition-transform"
+                className="rounded-lg bg-green-500 px-6 py-2.5 text-center text-sm font-semibold text-white transition-all hover:bg-green-600"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                Get Started
+                Book Appointment
               </Link>
-            </motion.div>
-          </div>
-        </div>
+            </div>
+          </motion.div>
+        )}
       </motion.nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6 lg:px-8 overflow-hidden">
-        <motion.div 
-          className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(36,174,124,0.1),transparent_50%)]"
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.5, 0.3]
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div 
-          className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(121,181,236,0.1),transparent_50%)]"
-          animate={{
-            scale: [1, 1.15, 1],
-            opacity: [0.3, 0.6, 0.3]
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
-          }}
-        />
-        
-        {/* Floating particles */}
-        {[...Array(6)].map((_, i) => (
+      <section className="relative min-h-screen overflow-hidden bg-gradient-to-b from-dark-200 to-dark-300 px-4 pt-32 pb-24 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-2 lg:gap-12">
+          {/* Left Column */}
           <motion.div
-            key={i}
-            className="absolute w-2 h-2 rounded-full"
-            style={{
-              background: i % 2 === 0 ? '#24AE7C' : '#79B5EC',
-              left: `${10 + i * 15}%`,
-              top: `${20 + (i % 3) * 20}%`,
-              opacity: 0.4
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.2, 0.8, 0.2]
-            }}
-            transition={{
-              duration: 3 + i * 0.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.4
-            }}
-          />
-        ))}
-        
-        <div className="relative mx-auto max-w-7xl">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div 
-              className="space-y-8"
-              initial="hidden"
-              animate="visible"
-              variants={staggerContainer}
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col justify-center"
+          >
+            <motion.div
+              variants={fadeInUp}
+              className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-green-500/30 bg-green-500/10 px-4 py-2 backdrop-blur-sm"
             >
-              <motion.div 
-                className="inline-flex items-center gap-2 bg-green-600 rounded-full px-4 py-2"
-                variants={fadeInUp}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-12-semibold text-light-200">
-                  Next-Generation Healthcare Management
-                </span>
-              </motion.div>
-              
-              <motion.h1 
-                className="text-5xl md:text-6xl lg:text-7xl font-bold text-light-200 leading-tight"
-                variants={fadeInUp}
-                transition={{ duration: 0.6 }}
-              >
-                Healthcare Made
-                <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
-                  {" "}Simple
-                </span>
-              </motion.h1>
-              
-              <motion.p 
-                className="text-18-regular text-dark-700 max-w-xl"
-                variants={fadeInUp}
-                transition={{ duration: 0.6, delay: 0.1 }}
-              >
-                Book appointments with top doctors, manage your medical records, and get instant SMS confirmations—all in one seamless platform.
-              </motion.p>
-              
-              <motion.div 
-                className="flex flex-col sm:flex-row gap-4"
-                variants={fadeInUp}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                <Link
-                  href="/patient"
-                  className="shad-primary-btn rounded-full px-8 py-4 text-16-semibold text-center hover:scale-105 transition-transform"
-                >
-                  Book Appointment
-                </Link>
-                <Link
-                  href="#features"
-                  className="shad-gray-btn rounded-full px-8 py-4 text-16-semibold text-center hover:scale-105 transition-transform"
-                >
-                  Learn More
-                </Link>
-              </motion.div>
-              
-              <motion.div 
-                className="flex items-center gap-8 pt-4"
-                variants={staggerContainer}
-                initial="hidden"
-                animate="visible"
-              >
-                <motion.div variants={fadeInUp}>
-                  <p className="text-24-bold text-light-200">10k+</p>
-                  <p className="text-14-regular text-dark-700">Happy Patients</p>
-                </motion.div>
-                <div className="h-12 w-px bg-dark-500" />
-                <motion.div variants={fadeInUp}>
-                  <p className="text-24-bold text-light-200">50+</p>
-                  <p className="text-14-regular text-dark-700">Expert Doctors</p>
-                </motion.div>
-                <div className="h-12 w-px bg-dark-500" />
-                <motion.div variants={fadeInUp}>
-                  <p className="text-24-bold text-light-200">24/7</p>
-                  <p className="text-14-regular text-dark-700">Support</p>
-                </motion.div>
-              </motion.div>
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+              </span>
+              <span className="text-sm font-medium text-light-200">
+                Next-Generation Healthcare Management
+              </span>
             </motion.div>
-            
-            <motion.div 
-              className="relative"
-              initial="hidden"
-              animate="visible"
-              variants={fadeInRight}
-              transition={{ duration: 0.8, delay: 0.3 }}
+
+            <motion.h1
+              variants={fadeInUp}
+              className="mb-6 text-5xl font-bold leading-tight text-white sm:text-6xl lg:text-7xl"
             >
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-3xl blur-3xl"
+              Healthcare Made{" "}
+              <span className="bg-gradient-to-r from-green-500 via-green-400 to-blue-500 bg-clip-text text-transparent">
+                Simple
+              </span>
+            </motion.h1>
+
+            <motion.p
+              variants={fadeInUp}
+              className="mb-8 text-xl leading-relaxed text-dark-700"
+            >
+              Experience seamless healthcare management. Book appointments with top
+              doctors, access your medical records securely, and receive instant
+              notifications—all in one comprehensive platform.
+            </motion.p>
+
+            <motion.div
+              variants={fadeInUp}
+              className="mb-10 flex flex-wrap gap-4"
+            >
+              <Link
+                href="/patient"
+                className="group flex items-center gap-2 rounded-lg bg-green-500 px-8 py-4 font-semibold text-white transition-all hover:bg-green-600 hover:shadow-xl hover:shadow-green-500/30"
+              >
+                Book Appointment
+                <svg
+                  className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              </Link>
+              <button
+                onClick={scrollToFeatures}
+                className="rounded-lg border-2 border-dark-500 px-8 py-4 font-semibold text-light-200 transition-all hover:border-green-500 hover:bg-green-500/10"
+              >
+                Learn More
+              </button>
+            </motion.div>
+
+            <motion.div
+              variants={fadeInUp}
+              className="flex flex-wrap gap-8 border-t border-dark-500 pt-8"
+            >
+              <div>
+                <div className="mb-1 text-3xl font-bold text-green-500">10,000+</div>
+                <div className="text-sm text-dark-700">Happy Patients</div>
+              </div>
+              <div>
+                <div className="mb-1 text-3xl font-bold text-green-500">50+</div>
+                <div className="text-sm text-dark-700">Expert Doctors</div>
+              </div>
+              <div>
+                <div className="mb-1 text-3xl font-bold text-green-500">24/7</div>
+                <div className="text-sm text-dark-700">Support Available</div>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Right Column - Appointment Management Icon */}
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="relative flex items-center justify-center"
+          >
+            {/* Background Glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-blue-500/20 blur-3xl" />
+
+            {/* Animated Rings */}
+            <motion.div
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.3, 0.1, 0.3],
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute h-[500px] w-[500px] rounded-full border-2 border-green-500/20"
+            />
+            <motion.div
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.2, 0.05, 0.2],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.5,
+              }}
+              className="absolute h-[550px] w-[550px] rounded-full border-2 border-blue-500/15"
+            />
+
+            {/* Main Icon */}
+            <motion.div
+              animate={{
+                y: [0, -10, 0],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              whileHover={{ scale: 1.05 }}
+              className="relative z-10 flex h-[450px] w-[400px] items-center justify-center"
+            >
+              {/* Glass Circle Background */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-500/20 to-blue-500/20 backdrop-blur-xl border-2 border-green-500/30 shadow-2xl" />
+
+              {/* Medical Clipboard Icon */}
+              <motion.div
                 animate={{
-                  scale: [1, 1.05, 1],
-                  rotate: [0, 5, 0]
+                  scale: [1, 1.02, 1],
                 }}
                 transition={{
-                  duration: 8,
+                  duration: 3,
                   repeat: Infinity,
-                  repeatType: "reverse"
+                  ease: "easeInOut",
                 }}
-              />
-              <motion.div
-                whileHover={{ scale: 1.02, rotate: 1 }}
-                transition={{ duration: 0.3 }}
+                className="relative z-10"
               >
-                <Image
-                  src="/assets/images/onboarding-img.png"
-                  height={600}
-                  width={600}
-                  alt="Healthcare Professional"
-                  className="relative rounded-3xl shadow-2xl"
-                />
+                <svg
+                  className="h-56 w-56 text-green-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  {/* Clipboard Board */}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
+                  {/* Checkmark Lines (Appointments) */}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9 12l2 2 4-4"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9 16h6"
+                  />
+                </svg>
               </motion.div>
+
+              {/* Floating Mini Icons */}
+              {/* Calendar Icon - Top Right */}
+              <motion.div
+                animate={{
+                  x: [0, 10, 0],
+                  y: [0, -10, 0],
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute -right-12 -top-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-xl shadow-blue-500/50"
+              >
+                <svg
+                  className="h-10 w-10 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </motion.div>
+
+              {/* Stethoscope Icon - Bottom Left */}
+              <motion.div
+                animate={{
+                  x: [0, -10, 0],
+                  y: [0, 10, 0],
+                }}
+                transition={{
+                  duration: 5.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.5,
+                }}
+                className="absolute -bottom-8 -left-12 flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-green-600 shadow-xl shadow-green-500/50"
+              >
+                <svg
+                  className="h-12 w-12 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+              </motion.div>
+
+              {/* User/Patient Icon - Left */}
+              <motion.div
+                animate={{
+                  x: [0, -8, 0],
+                  y: [0, 0, 0],
+                }}
+                transition={{
+                  duration: 4.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1,
+                }}
+                className="absolute -left-16 top-32 flex h-18 w-18 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/50"
+              >
+                <svg
+                  className="h-10 w-10 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </motion.div>
+
+              {/* Notification Bell - Right */}
+              <motion.div
+                animate={{
+                  x: [0, 8, 0],
+                  rotate: [0, 15, -15, 0],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 1.5,
+                }}
+                className="absolute -right-16 top-40 flex h-18 w-18 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/50"
+              >
+                <svg
+                  className="h-10 w-10 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+              </motion.div>
+
+              {/* Pulse Ring */}
+              <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.5, 0, 0.5],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute inset-0 rounded-full border-4 border-green-500/40"
+              />
             </motion.div>
-          </div>
+          </motion.div>
         </div>
+
+        {/* Trust Indicators */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+          className="mx-auto mt-20 max-w-7xl"
+        >
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+            <div className="flex items-center justify-center gap-3 rounded-lg border border-dark-500 bg-dark-400/50 p-4 backdrop-blur-sm">
+              <svg className="h-6 w-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-light-200">HIPAA Compliant</span>
+            </div>
+            <div className="flex items-center justify-center gap-3 rounded-lg border border-dark-500 bg-dark-400/50 p-4 backdrop-blur-sm">
+              <svg className="h-6 w-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-light-200">Secure & Encrypted</span>
+            </div>
+            <div className="flex items-center justify-center gap-3 rounded-lg border border-dark-500 bg-dark-400/50 p-4 backdrop-blur-sm">
+              <svg className="h-6 w-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+              </svg>
+              <span className="text-sm font-medium text-light-200">Trusted by 10k+</span>
+            </div>
+            <div className="flex items-center justify-center gap-3 rounded-lg border border-dark-500 bg-dark-400/50 p-4 backdrop-blur-sm">
+              <svg className="h-6 w-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-light-200">Certified Platform</span>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 px-6 lg:px-8 bg-dark-300/50" ref={featuresRef}>
+      <section
+        id="features"
+        ref={featuresRef}
+        className="bg-dark-300 px-4 py-24 sm:px-6 lg:px-8"
+      >
         <div className="mx-auto max-w-7xl">
-          <motion.div 
-            className="text-center space-y-4 mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={isFeaturesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.6 }}
+          <motion.div
+            initial="hidden"
+            animate={isFeaturesInView ? "visible" : "hidden"}
+            variants={fadeInUp}
+            className="mb-16 text-center"
           >
-            <h2 className="text-36-bold text-light-200">
+            <span className="mb-4 inline-block rounded-full bg-green-500/10 px-4 py-1.5 text-sm font-semibold text-green-500">
+              Platform Features
+            </span>
+            <h2 className="mb-4 text-4xl font-bold text-white lg:text-5xl">
               Everything You Need for Better Healthcare
             </h2>
-            <p className="text-18-regular text-dark-700 max-w-2xl mx-auto">
-              A comprehensive platform designed to simplify healthcare management for patients and administrators.
+            <p className="mx-auto max-w-3xl text-lg text-dark-700">
+              Our comprehensive platform is designed to streamline healthcare management
+              for both patients and providers
             </p>
           </motion.div>
-          
-          <motion.div 
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+
+          <motion.div
             initial="hidden"
             animate={isFeaturesInView ? "visible" : "hidden"}
             variants={staggerContainer}
+            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
           >
-            {/* Feature 1 */}
-            <motion.div 
-              className="group p-8 rounded-2xl bg-dark-400 border border-dark-500 hover:border-green-500 transition-all hover:shadow-lg hover:shadow-green-500/10"
-              variants={scaleIn}
-              transition={{ duration: 0.5 }}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            >
-              <div className="flex items-center justify-center h-12 w-12 rounded-full bg-green-600 mb-6 group-hover:scale-110 transition-transform">
-                <svg className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-24-bold text-light-200 mb-3">Easy Appointment Booking</h3>
-              <p className="text-16-regular text-dark-700">
-                Schedule appointments with your preferred doctors at your convenience. Book multiple appointments hassle-free.
-              </p>
-            </motion.div>
-
-            {/* Feature 2 */}
-            <motion.div 
-              className="group p-8 rounded-2xl bg-dark-400 border border-dark-500 hover:border-blue-500 transition-all hover:shadow-lg hover:shadow-blue-500/10"
-              variants={scaleIn}
-              transition={{ duration: 0.5 }}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            >
-              <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 mb-6 group-hover:scale-110 transition-transform">
-                <svg className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h3 className="text-24-bold text-light-200 mb-3">Medical Records</h3>
-              <p className="text-16-regular text-dark-700">
-                Securely store and access your medical history, prescriptions, and documents anytime, anywhere.
-              </p>
-            </motion.div>
-
-            {/* Feature 3 */}
-            <motion.div 
-              className="group p-8 rounded-2xl bg-dark-400 border border-dark-500 hover:border-green-500 transition-all hover:shadow-lg hover:shadow-green-500/10"
-              variants={scaleIn}
-              transition={{ duration: 0.5 }}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            >
-              <div className="flex items-center justify-center h-12 w-12 rounded-full bg-green-600 mb-6 group-hover:scale-110 transition-transform">
-                <svg className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-24-bold text-light-200 mb-3">SMS Notifications</h3>
-              <p className="text-16-regular text-dark-700">
-                Get instant SMS confirmations and reminders for your appointments. Never miss an appointment again.
-              </p>
-            </motion.div>
-
-            {/* Feature 4 */}
-            <motion.div 
-              className="group p-8 rounded-2xl bg-dark-400 border border-dark-500 hover:border-blue-500 transition-all hover:shadow-lg hover:shadow-blue-500/10"
-              variants={scaleIn}
-              transition={{ duration: 0.5 }}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            >
-              <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 mb-6 group-hover:scale-110 transition-transform">
-                <svg className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="text-24-bold text-light-200 mb-3">Admin Dashboard</h3>
-              <p className="text-16-regular text-dark-700">
-                Powerful admin tools to manage appointments, schedule confirmations, and handle cancellations efficiently.
-              </p>
-            </motion.div>
-
-            {/* Feature 5 */}
-            <motion.div 
-              className="group p-8 rounded-2xl bg-dark-400 border border-dark-500 hover:border-green-500 transition-all hover:shadow-lg hover:shadow-green-500/10"
-              variants={scaleIn}
-              transition={{ duration: 0.5 }}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            >
-              <div className="flex items-center justify-center h-12 w-12 rounded-full bg-green-600 mb-6 group-hover:scale-110 transition-transform">
-                <svg className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-              </div>
-              <h3 className="text-24-bold text-light-200 mb-3">Secure File Upload</h3>
-              <p className="text-16-regular text-dark-700">
-                Upload medical documents, insurance cards, and identification securely with Appwrite storage.
-              </p>
-            </motion.div>
-
-            {/* Feature 6 */}
-            <motion.div 
-              className="group p-8 rounded-2xl bg-dark-400 border border-dark-500 hover:border-blue-500 transition-all hover:shadow-lg hover:shadow-blue-500/10"
-              variants={scaleIn}
-              transition={{ duration: 0.5 }}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            >
-              <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 mb-6 group-hover:scale-110 transition-transform">
-                <svg className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-24-bold text-light-200 mb-3">Fully Responsive</h3>
-              <p className="text-16-regular text-dark-700">
-                Access CarePulse on any device—desktop, tablet, or mobile. Seamless experience across all screen sizes.
-              </p>
-            </motion.div>
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                variants={scaleIn}
+                className="group rounded-2xl border border-dark-500 bg-dark-400/50 p-8 backdrop-blur-sm transition-all duration-300 hover:border-green-500/50 hover:bg-dark-400 hover:shadow-xl hover:shadow-green-500/10"
+              >
+                <div className="mb-6 inline-flex rounded-xl bg-green-500/10 p-4 text-green-500 transition-all group-hover:bg-green-500 group-hover:text-white">
+                  {renderIcon(feature.icon)}
+                </div>
+                <h3 className="mb-3 text-xl font-bold text-white">
+                  {feature.title}
+                </h3>
+                <p className="leading-relaxed text-dark-700">
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
 
       {/* Doctors Section */}
-      <section className="py-20 px-6 lg:px-8" ref={doctorsRef}>
+      <section
+        ref={doctorsRef}
+        className="bg-dark-200 px-4 py-24 sm:px-6 lg:px-8"
+      >
         <div className="mx-auto max-w-7xl">
-          <motion.div 
-            className="text-center space-y-4 mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={isDoctorsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.6 }}
+          <motion.div
+            initial="hidden"
+            animate={isDoctorsInView ? "visible" : "hidden"}
+            variants={fadeInUp}
+            className="mb-16 text-center"
           >
-            <h2 className="text-36-bold text-light-200">Meet Our Expert Doctors</h2>
-            <p className="text-18-regular text-dark-700 max-w-2xl mx-auto">
-              Our team of experienced healthcare professionals is here to provide you with the best care possible.
+            <span className="mb-4 inline-block rounded-full bg-green-500/10 px-4 py-1.5 text-sm font-semibold text-green-500">
+              Our Medical Team
+            </span>
+            <h2 className="mb-4 text-4xl font-bold text-white lg:text-5xl">
+              Meet Our Expert Doctors
+            </h2>
+            <p className="mx-auto max-w-3xl text-lg text-dark-700">
+              Board-certified physicians dedicated to providing exceptional care
             </p>
           </motion.div>
-          
-          <motion.div 
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+
+          <motion.div
             initial="hidden"
             animate={isDoctorsInView ? "visible" : "hidden"}
             variants={staggerContainer}
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
           >
-            {[
-              { name: "Dr. John Green", specialty: "Cardiologist", initials: "JG", bgColor: "bg-green-600" },
-              { name: "Dr. Leila Cameron", specialty: "Pediatrician", initials: "LC", bgColor: "bg-blue-600" },
-              { name: "Dr. David Livingston", specialty: "Orthopedic", initials: "DL", bgColor: "bg-green-600" },
-              { name: "Dr. Evan Peter", specialty: "Neurologist", initials: "EP", bgColor: "bg-blue-600" },
-              { name: "Dr. Jane Powell", specialty: "Dermatologist", initials: "JP", bgColor: "bg-green-600" },
-              { name: "Dr. Alex Ramirez", specialty: "General Practice", initials: "AR", bgColor: "bg-blue-600" },
-              { name: "Dr. Jasmine Lee", specialty: "Ophthalmologist", initials: "JL", bgColor: "bg-green-600" },
-              { name: "Dr. Alyana Cruz", specialty: "Gynecologist", initials: "AC", bgColor: "bg-blue-600" },
-            ].map((doctor, index) => (
+            {doctors.map((doctor, index) => (
               <motion.div
                 key={index}
-                className="group relative p-6 rounded-2xl bg-dark-400 border border-dark-500 hover:border-green-500 transition-all hover:shadow-lg hover:shadow-green-500/10"
                 variants={scaleIn}
-                transition={{ duration: 0.5 }}
-                whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                className="group rounded-2xl border border-dark-500 bg-dark-400/50 p-6 text-center backdrop-blur-sm transition-all duration-300 hover:border-green-500/50 hover:bg-dark-400 hover:shadow-xl"
               >
-                <div className="flex flex-col items-center">
-                  {/* Avatar Circle */}
-                  <motion.div 
-                    className={`w-32 h-32 rounded-full ${doctor.bgColor} flex items-center justify-center mb-4 group-hover:shadow-2xl transition-shadow`}
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <span className="text-white font-bold" style={{ fontSize: '2.5rem' }}>{doctor.initials}</span>
-                  </motion.div>
-                  
-                  {/* Doctor Info */}
-                  <div className="text-center">
-                    <h3 className="text-18-bold text-light-200 mb-1">{doctor.name}</h3>
-                    <p className="text-14-regular text-dark-700 mb-3">{doctor.specialty}</p>
-                    
-                    {/* Medical Badge */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-dark-300 border border-dark-500">
-                      <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                      <span className="text-12-regular text-dark-700">Verified</span>
-                    </div>
+                <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-green-600 text-2xl font-bold text-white shadow-lg shadow-green-500/30">
+                  {doctor.initials}
+                </div>
+                <h3 className="mb-1 text-lg font-bold text-white">{doctor.name}</h3>
+                <p className="mb-2 text-sm text-green-500">{doctor.specialty}</p>
+                <p className="mb-4 text-xs text-dark-700">{doctor.experience} Experience</p>
+                <div className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-3 py-1 text-xs font-medium text-green-500">
+                  <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  Verified
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section
+        ref={testimonialsRef}
+        className="bg-dark-300 px-4 py-24 sm:px-6 lg:px-8"
+      >
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial="hidden"
+            animate={isTestimonialsInView ? "visible" : "hidden"}
+            variants={fadeInUp}
+            className="mb-16 text-center"
+          >
+            <span className="mb-4 inline-block rounded-full bg-green-500/10 px-4 py-1.5 text-sm font-semibold text-green-500">
+              Patient Reviews
+            </span>
+            <h2 className="mb-4 text-4xl font-bold text-white lg:text-5xl">
+              What Our Patients Say
+            </h2>
+            <p className="mx-auto max-w-3xl text-lg text-dark-700">
+              Real experiences from real patients
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            animate={isTestimonialsInView ? "visible" : "hidden"}
+            variants={staggerContainer}
+            className="grid gap-8 md:grid-cols-3"
+          >
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                variants={scaleIn}
+                className="rounded-2xl border border-dark-500 bg-dark-400/50 p-8 backdrop-blur-sm transition-all duration-300 hover:border-green-500/50 hover:bg-dark-400"
+              >
+                <div className="mb-4 flex gap-1">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <svg
+                      key={i}
+                      className="h-5 w-5 text-green-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <p className="mb-6 text-lg leading-relaxed text-dark-700">
+                  "{testimonial.quote}"
+                </p>
+                <div className="flex items-center gap-3 border-t border-dark-500 pt-6">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-green-600 font-bold text-white">
+                    {testimonial.name.split(" ").map(n => n[0]).join("")}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-white">{testimonial.name}</h4>
+                    <p className="text-sm text-dark-700">{testimonial.role}</p>
                   </div>
                 </div>
               </motion.div>
@@ -496,286 +829,75 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-20 px-6 lg:px-8 bg-dark-300/50" ref={howItWorksRef}>
-        <div className="mx-auto max-w-7xl">
-          <motion.div 
-            className="text-center space-y-4 mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={isHowItWorksInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-36-bold text-light-200">How It Works</h2>
-            <p className="text-18-regular text-dark-700 max-w-2xl mx-auto">
-              Get started with CarePulse in just a few simple steps
-            </p>
-          </motion.div>
-
-          <motion.div 
-            className="grid md:grid-cols-4 gap-8"
-            initial="hidden"
-            animate={isHowItWorksInView ? "visible" : "hidden"}
-            variants={staggerContainer}
-          >
-            {/* Step 1 */}
-            <motion.div 
-              className="relative text-center"
-              variants={fadeInUp}
-              transition={{ duration: 0.5 }}
-            >
-              <motion.div 
-                className="mx-auto w-20 h-20 rounded-full bg-green-600 flex items-center justify-center mb-6"
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 0.2 }}
-              >
-                <span className="text-32-bold text-white">1</span>
-              </motion.div>
-              <h3 className="text-20-bold text-light-200 mb-3">Register</h3>
-              <p className="text-14-regular text-dark-700">
-                Create your account with basic information in under 2 minutes
-              </p>
-            </motion.div>
-
-            {/* Step 2 */}
-            <motion.div 
-              className="relative text-center"
-              variants={fadeInUp}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <motion.div 
-                className="mx-auto w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center mb-6"
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 0.2 }}
-              >
-                <span className="text-32-bold text-white">2</span>
-              </motion.div>
-              <h3 className="text-20-bold text-light-200 mb-3">Book Appointment</h3>
-              <p className="text-14-regular text-dark-700">
-                Choose your preferred doctor and select a convenient time slot
-              </p>
-            </motion.div>
-
-            {/* Step 3 */}
-            <motion.div 
-              className="relative text-center"
-              variants={fadeInUp}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <motion.div 
-                className="mx-auto w-20 h-20 rounded-full bg-green-600 flex items-center justify-center mb-6"
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 0.2 }}
-              >
-                <span className="text-32-bold text-white">3</span>
-              </motion.div>
-              <h3 className="text-20-bold text-light-200 mb-3">Get Confirmation</h3>
-              <p className="text-14-regular text-dark-700">
-                Receive instant SMS confirmation with appointment details
-              </p>
-            </motion.div>
-
-            {/* Step 4 */}
-            <motion.div 
-              className="relative text-center"
-              variants={fadeInUp}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <motion.div 
-                className="mx-auto w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center mb-6"
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 0.2 }}
-              >
-                <span className="text-32-bold text-white">4</span>
-              </motion.div>
-              <h3 className="text-20-bold text-light-200 mb-3">Visit Doctor</h3>
-              <p className="text-14-regular text-dark-700">
-                Attend your appointment and receive quality healthcare
-              </p>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 px-6 lg:px-8" ref={testimonialsRef}>
-        <div className="mx-auto max-w-7xl">
-          <motion.div 
-            className="text-center space-y-4 mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={isTestimonialsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-36-bold text-light-200">What Our Patients Say</h2>
-            <p className="text-18-regular text-dark-700 max-w-2xl mx-auto">
-              Trusted by thousands of patients for quality healthcare
-            </p>
-          </motion.div>
-
-          <motion.div 
-            className="grid md:grid-cols-3 gap-8"
-            initial="hidden"
-            animate={isTestimonialsInView ? "visible" : "hidden"}
-            variants={staggerContainer}
-          >
-            {/* Testimonial 1 */}
-            <motion.div 
-              className="p-8 rounded-2xl bg-dark-400 border border-dark-500 hover:border-green-500 transition-all"
-              variants={scaleIn}
-              transition={{ duration: 0.5 }}
-              whileHover={{ y: -5 }}
-            >
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-16-regular text-dark-700 mb-6">
-                "CarePulse made booking appointments so easy! The SMS reminders are a lifesaver. I never miss my check-ups anymore."
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
-                  <span className="text-18-bold text-white">SA</span>
-                </div>
-                <div>
-                  <p className="text-16-semibold text-light-200">Sarah Anderson</p>
-                  <p className="text-14-regular text-dark-700">Regular Patient</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Testimonial 2 */}
-            <motion.div 
-              className="p-8 rounded-2xl bg-dark-400 border border-dark-500 hover:border-blue-500 transition-all"
-              variants={scaleIn}
-              transition={{ duration: 0.5 }}
-              whileHover={{ y: -5 }}
-            >
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-16-regular text-dark-700 mb-6">
-                "The doctors are professional and caring. The entire platform is user-friendly. Highly recommend CarePulse!"
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center">
-                  <span className="text-18-bold text-white">MJ</span>
-                </div>
-                <div>
-                  <p className="text-16-semibold text-light-200">Michael Johnson</p>
-                  <p className="text-14-regular text-dark-700">IT Professional</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Testimonial 3 */}
-            <motion.div 
-              className="p-8 rounded-2xl bg-dark-400 border border-dark-500 hover:border-green-500 transition-all"
-              variants={scaleIn}
-              transition={{ duration: 0.5 }}
-              whileHover={{ y: -5 }}
-            >
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-16-regular text-dark-700 mb-6">
-                "As a busy mom, CarePulse has been a game-changer. Quick bookings, great doctors, and excellent care for my whole family."
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
-                  <span className="text-18-bold text-white">EP</span>
-                </div>
-                <div>
-                  <p className="text-16-semibold text-light-200">Emily Parker</p>
-                  <p className="text-14-regular text-dark-700">Mother of Two</p>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
       {/* FAQ Section */}
-      <section className="py-20 px-6 lg:px-8 bg-dark-300/50" ref={faqRef}>
+      <section
+        ref={faqRef}
+        className="bg-dark-200 px-4 py-24 sm:px-6 lg:px-8"
+      >
         <div className="mx-auto max-w-4xl">
-          <motion.div 
-            className="text-center space-y-4 mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={isFaqInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.6 }}
+          <motion.div
+            initial="hidden"
+            animate={isFaqInView ? "visible" : "hidden"}
+            variants={fadeInUp}
+            className="mb-16 text-center"
           >
-            <h2 className="text-36-bold text-light-200">Frequently Asked Questions</h2>
-            <p className="text-18-regular text-dark-700 max-w-2xl mx-auto">
-              Find answers to common questions about CarePulse
+            <span className="mb-4 inline-block rounded-full bg-green-500/10 px-4 py-1.5 text-sm font-semibold text-green-500">
+              FAQ
+            </span>
+            <h2 className="mb-4 text-4xl font-bold text-white lg:text-5xl">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-lg text-dark-700">
+              Find answers to common questions about our platform
             </p>
           </motion.div>
 
-          <motion.div 
-            className="space-y-4"
+          <motion.div
             initial="hidden"
             animate={isFaqInView ? "visible" : "hidden"}
             variants={staggerContainer}
+            className="space-y-4"
           >
-            {[
-              {
-                question: "How do I book an appointment?",
-                answer: "Simply register on our platform, browse available doctors, select your preferred time slot, and confirm your booking. You'll receive an instant SMS confirmation."
-              },
-              {
-                question: "Is my medical information secure?",
-                answer: "Absolutely! We use industry-standard encryption and secure storage with Appwrite. Your data is protected and complies with healthcare privacy regulations."
-              },
-              {
-                question: "Do you accept insurance?",
-                answer: "Yes, we work with most major insurance providers. Please provide your insurance information during registration, and we'll verify coverage."
-              },
-              {
-                question: "What if I need emergency care?",
-                answer: "For medical emergencies, please call 911 or visit your nearest emergency room immediately. CarePulse is designed for scheduled appointments and non-emergency care."
-              }
-            ].map((faq, index) => (
-              <motion.div 
+            {faqs.map((faq, index) => (
+              <motion.div
                 key={index}
-                className="rounded-xl bg-dark-400 border border-dark-500 overflow-hidden"
                 variants={fadeInUp}
-                transition={{ duration: 0.5 }}
+                className="overflow-hidden rounded-2xl border border-dark-500 bg-dark-400/50 backdrop-blur-sm"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-dark-300 transition-colors"
+                  className="flex w-full items-center justify-between p-6 text-left transition-colors hover:bg-dark-400/70"
                 >
-                  <span className="text-18-bold text-light-200">{faq.question}</span>
+                  <span className="pr-8 text-lg font-bold text-white">
+                    {faq.question}
+                  </span>
                   <motion.svg
-                    className="w-6 h-6 text-green-500"
+                    animate={{ rotate: openFaq === index ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="h-5 w-5 flex-shrink-0 text-green-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    animate={{ rotate: openFaq === index ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </motion.svg>
                 </button>
                 <motion.div
                   initial={false}
                   animate={{
                     height: openFaq === index ? "auto" : 0,
-                    opacity: openFaq === index ? 1 : 0
+                    opacity: openFaq === index ? 1 : 0,
                   }}
                   transition={{ duration: 0.3 }}
                   className="overflow-hidden"
                 >
-                  <div className="px-6 pb-5">
-                    <p className="text-16-regular text-dark-700">{faq.answer}</p>
+                  <div className="px-6 pb-6 leading-relaxed text-dark-700">
+                    {faq.answer}
                   </div>
                 </motion.div>
               </motion.div>
@@ -785,163 +907,156 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 lg:px-8" ref={ctaRef}>
-        <div className="mx-auto max-w-5xl">
-          <motion.div 
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-green-600 to-blue-600 p-12 shadow-2xl"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={isCtaInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.6 }}
+      <section
+        ref={ctaRef}
+        className="bg-dark-300 px-4 py-24 sm:px-6 lg:px-8"
+      >
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={
+              isCtaInView ? { scale: 1, opacity: 1 } : { scale: 0.95, opacity: 0 }
+            }
+            transition={{ duration: 0.5 }}
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-green-600 via-green-500 to-blue-600 p-12 text-center shadow-2xl lg:p-16"
           >
-            <motion.div 
-              className="absolute inset-0 bg-[url('/assets/images/appointments-bg.png')] opacity-10 mix-blend-overlay"
-              animate={{
-                backgroundPosition: ["0% 0%", "100% 100%"],
-              }}
-              transition={{
-                duration: 20,
-                repeat: Infinity,
-                repeatType: "reverse"
-              }}
-            />
-            <motion.div 
-              className="relative z-10 text-center space-y-6"
-              initial="hidden"
-              animate={isCtaInView ? "visible" : "hidden"}
-              variants={staggerContainer}
-            >
-              <motion.h2 
-                className="text-36-bold text-white"
-                variants={fadeInUp}
-              >
+            <div className="absolute inset-0 bg-[url('/assets/images/pattern.svg')] opacity-10" />
+            <div className="relative z-10">
+              <h2 className="mb-4 text-4xl font-bold text-white lg:text-5xl">
                 Ready to Get Started?
-              </motion.h2>
-              <motion.p 
-                className="text-18-regular text-white/90 max-w-2xl mx-auto"
-                variants={fadeInUp}
-              >
-                Join thousands of patients who trust CarePulse for their healthcare needs. Book your first appointment today.
-              </motion.p>
-              <motion.div variants={fadeInUp}>
+              </h2>
+              <p className="mb-8 text-xl text-white/90">
+                Join thousands of patients who trust CarePulse for their healthcare needs
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
                 <Link
                   href="/patient"
-                  className="inline-block bg-white text-green-500 rounded-full px-8 py-4 text-16-semibold hover:bg-light-200 hover:scale-105 transition-all"
+                  className="group inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 font-semibold text-green-600 transition-all hover:scale-105 hover:shadow-2xl"
                 >
                   Book Your Appointment
+                  <svg
+                    className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
                 </Link>
-              </motion.div>
-            </motion.div>
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center gap-2 rounded-lg border-2 border-white px-8 py-4 font-semibold text-white transition-all hover:bg-white hover:text-green-600"
+                >
+                  Access Patient Portal
+                </Link>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-dark-500 py-12 px-6 lg:px-8">
+      <footer className="border-t border-dark-500 bg-dark-300 px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div className="space-y-4">
-              <Link href="/" className="inline-block">
-                <Image
-                  src="/assets/icons/logo-full.svg"
-                  height={32}
-                  width={160}
-                  alt="CarePulse"
-                  className="h-8 w-auto hover:opacity-80 transition-opacity cursor-pointer"
-                />
-              </Link>
-              <p className="text-14-regular text-dark-700">
-                Next-generation healthcare management platform for patients and providers.
+          <div className="mb-12 grid gap-8 md:grid-cols-4">
+            {/* Branding */}
+            <div className="md:col-span-1">
+              <Image
+                src="/assets/icons/logo-full.svg"
+                height={32}
+                width={162}
+                alt="CarePulse"
+                className="mb-4 h-8 w-fit"
+              />
+              <p className="text-sm leading-relaxed text-dark-700">
+                Next-generation healthcare management platform for better patient care
               </p>
             </div>
-            
+
+            {/* Product */}
             <div>
-              <h4 className="text-16-semibold text-light-200 mb-4">Product</h4>
-              <ul className="space-y-2">
+              <h3 className="mb-4 font-bold text-white">Product</h3>
+              <ul className="space-y-2 text-sm text-dark-700">
                 <li>
-                  <Link href="#features" className="text-14-regular text-dark-700 hover:text-green-500 transition-colors">
+                  <a
+                    href="#features"
+                    className="transition-colors hover:text-green-500"
+                  >
                     Features
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link href="/patient" className="text-14-regular text-dark-700 hover:text-green-500 transition-colors">
+                  <Link
+                    href="/patient"
+                    className="transition-colors hover:text-green-500"
+                  >
                     Book Appointment
                   </Link>
                 </li>
                 <li>
-                  <button 
+                  <button
                     onClick={() => setShowPasskeyModal(true)}
-                    className="text-14-regular text-dark-700 hover:text-green-500 transition-colors cursor-pointer"
+                    className="transition-colors hover:text-green-500"
                   >
                     Admin Portal
                   </button>
                 </li>
               </ul>
             </div>
-            
+
+            {/* Company */}
             <div>
-              <h4 className="text-16-semibold text-light-200 mb-4">Company</h4>
-              <ul className="space-y-2">
+              <h3 className="mb-4 font-bold text-white">Company</h3>
+              <ul className="space-y-2 text-sm text-dark-700">
                 <li>
-                  <a href="#" className="text-14-regular text-dark-700 hover:text-green-500 transition-colors">
+                  <a href="#" className="transition-colors hover:text-green-500">
                     About Us
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-14-regular text-dark-700 hover:text-green-500 transition-colors">
+                  <a href="#" className="transition-colors hover:text-green-500">
                     Privacy Policy
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-14-regular text-dark-700 hover:text-green-500 transition-colors">
+                  <a href="#" className="transition-colors hover:text-green-500">
                     Terms of Service
                   </a>
                 </li>
               </ul>
             </div>
-            
+
+            {/* Contact */}
             <div>
-              <h4 className="text-16-semibold text-light-200 mb-4">Tech Stack</h4>
-              <div className="flex flex-wrap gap-2">
-                <span className="inline-block bg-dark-400 text-dark-700 rounded-full px-3 py-1 text-12-regular">
-                  Next.js
-                </span>
-                <span className="inline-block bg-dark-400 text-dark-700 rounded-full px-3 py-1 text-12-regular">
-                  TypeScript
-                </span>
-                <span className="inline-block bg-dark-400 text-dark-700 rounded-full px-3 py-1 text-12-regular">
-                  Tailwind
-                </span>
-                <span className="inline-block bg-dark-400 text-dark-700 rounded-full px-3 py-1 text-12-regular">
-                  Appwrite
-                </span>
-              </div>
+              <h3 className="mb-4 font-bold text-white">Contact</h3>
+              <ul className="space-y-2 text-sm text-dark-700">
+                <li>support@carepulse.com</li>
+                <li>1-800-CAREPULSE</li>
+                <li>24/7 Customer Support</li>
+              </ul>
             </div>
           </div>
-          
-          <div className="border-t border-dark-500 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-14-regular text-dark-700">
-              © 2024 CarePulse. All rights reserved.
-            </p>
-            <div className="flex gap-6">
-              <a href="#" className="text-dark-700 hover:text-green-500 transition-colors">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                </svg>
-              </a>
-              <a href="#" className="text-dark-700 hover:text-green-500 transition-colors">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-                </svg>
-              </a>
-              <a href="#" className="text-dark-700 hover:text-green-500 transition-colors">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path fillRule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c5.51 0 10-4.48 10-10S17.51 2 12 2zm6.605 4.61a8.502 8.502 0 011.93 5.314c-.281-.054-3.101-.629-5.943-.271-.065-.141-.12-.293-.184-.445a25.416 25.416 0 00-.564-1.236c3.145-1.28 4.577-3.124 4.761-3.362zM12 3.475c2.17 0 4.154.813 5.662 2.148-.152.216-1.443 1.941-4.48 3.08-1.399-2.57-2.95-4.675-3.189-5A8.687 8.687 0 0112 3.475zm-3.633.803a53.896 53.896 0 013.167 4.935c-3.992 1.063-7.517 1.04-7.896 1.04a8.581 8.581 0 014.729-5.975zM3.453 12.01v-.26c.37.01 4.512.065 8.775-1.215.25.477.477.965.694 1.453-.109.033-.228.065-.336.098-4.404 1.42-6.747 5.303-6.942 5.629a8.522 8.522 0 01-2.19-5.705zM12 20.547a8.482 8.482 0 01-5.239-1.8c.152-.315 1.888-3.656 6.703-5.337.022-.01.033-.01.054-.022a35.318 35.318 0 011.823 6.475 8.4 8.4 0 01-3.341.684zm4.761-1.465c-.086-.52-.542-3.015-1.659-6.084 2.679-.423 5.022.271 5.314.369a8.468 8.468 0 01-3.655 5.715z" clipRule="evenodd" />
-                </svg>
-              </a>
+
+          <div className="border-t border-dark-500 pt-8">
+            <div className="flex items-center justify-center">
+              <p className="text-sm text-dark-700">
+                © 2025 CarePulse. All rights reserved.
+              </p>
             </div>
           </div>
         </div>
       </footer>
-    </div>
+
+      {/* PasskeyModal */}
+      <PasskeyModal
+        isOpen={showPasskeyModal}
+        onClose={() => setShowPasskeyModal(false)}
+      />
+    </>
   );
 }

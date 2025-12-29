@@ -166,7 +166,7 @@ export default function PatientLoginPage() {
               </div>
             </div>
 
-            <p className="copyright mt-10 py-12">© 2024 CarePulse</p>
+            <p className="copyright mt-10 py-12">© 2025 CarePulse</p>
           </motion.div>
         </div>
       </section>
