@@ -72,15 +72,20 @@ export async function verifyOTP(email: string, otp: string) {
       return { success: false, message: "Invalid or expired OTP" };
     }
 
-    const otpDoc = response.documents[0];
+    // Appwrite SDK types documents as generic `Document`, so we assert our OTP schema here.
+    const otpDoc = response.documents[0] as typeof response.documents[number] & {
+      otp?: string;
+      expiresAt?: string;
+      verified?: boolean;
+    };
 
     // Check if OTP matches
-    if (otpDoc.otp !== otp) {
+    if (!otpDoc.otp || otpDoc.otp !== otp) {
       return { success: false, message: "Invalid OTP" };
     }
 
     // Check if OTP is expired
-    if (new Date(otpDoc.expiresAt) < new Date()) {
+    if (!otpDoc.expiresAt || new Date(otpDoc.expiresAt) < new Date()) {
       // Delete expired OTP
       await databases.deleteDocument(
         DATABASE_ID!,
@@ -123,7 +128,7 @@ async function deleteOTPByEmail(email: string) {
 
     // Delete all OTP documents for this email
     const deletePromises = response.documents
-      .filter((doc) => doc.email === email.toLowerCase())
+      .filter((doc) => (doc as typeof response.documents[number] & { email?: string }).email === email.toLowerCase())
       .map((doc) =>
         databases.deleteDocument(DATABASE_ID!, OTP_COLLECTION_ID!, doc.$id)
       );
@@ -145,9 +150,13 @@ export async function isEmailVerified(email: string): Promise<boolean> {
       []
     );
 
-    const verifiedOTP = response.documents.find(
-      (doc) => doc.email === email.toLowerCase() && doc.verified === true
-    );
+    const verifiedOTP = response.documents.find((doc) => {
+      const typed = doc as typeof response.documents[number] & {
+        email?: string;
+        verified?: boolean;
+      };
+      return typed.email === email.toLowerCase() && typed.verified === true;
+    });
 
     return !!verifiedOTP;
   } catch (error) {
@@ -169,7 +178,8 @@ export async function resendOTP(email: string) {
     );
 
     const recentOTP = response.documents.find((doc) => {
-      if (doc.email !== email.toLowerCase()) return false;
+      const typed = doc as typeof response.documents[number] & { email?: string };
+      if (typed.email !== email.toLowerCase()) return false;
       const createdAt = new Date(doc.$createdAt);
       const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
       return createdAt > oneMinuteAgo;
@@ -183,7 +193,7 @@ export async function resendOTP(email: string) {
     }
 
     // Generate and store new OTP
-    const newOTP = generateOTP();
+    const newOTP = await generateOTP();
     await storeOTP(email, newOTP);
 
     return { success: true, otp: newOTP };

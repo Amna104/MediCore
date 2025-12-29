@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { PrescriptionList } from "@/components/PrescriptionList";
 import { MedicalTimeline } from "@/components/MedicalTimeline";

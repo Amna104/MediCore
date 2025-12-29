@@ -166,11 +166,19 @@ export const getAvailableTimeSlots = async (
       ]
     );
 
-    if (availability.documents.length === 0 || !availability.documents[0].isAvailable) {
+    // Appwrite SDK types `documents` as generic `Document`, so we assert our known schema here.
+    const schedule = availability.documents[0] as
+      | (typeof availability.documents[number] & {
+          isAvailable?: boolean;
+          startTime: string;
+          endTime: string;
+        })
+      | undefined;
+
+    if (!schedule || !schedule.isAvailable) {
       return [];
     }
 
-    const schedule = availability.documents[0];
     const startTime = schedule.startTime; // "09:00"
     const endTime = schedule.endTime; // "17:00"
 

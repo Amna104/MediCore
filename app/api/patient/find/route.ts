@@ -28,7 +28,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const patient = patients.documents[0];
+    // Appwrite SDK types `documents` as generic `Document`, so we assert our known schema here.
+    const patient = patients.documents[0] as typeof patients.documents[number] & {
+      userId?: string;
+    };
 
     return NextResponse.json({
       success: true,

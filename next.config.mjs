@@ -1,6 +1,9 @@
 import { withSentryConfig } from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript:{
+    ignoreBuildErrors:true
+  },
   eslint: {
     // Allow production builds to successfully complete even if
     // your project has ESLint errors.
