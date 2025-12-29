@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { StatCard } from "@/components/StatCard";
 import { columns } from "@/components/table/columns";

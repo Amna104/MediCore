@@ -1,9 +1,9 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import { useRef, useState, useEffect } from "react";
+
 import { PasskeyModal } from "@/components/PasskeyModal";
 
 // Animation variants
@@ -805,7 +805,7 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="mb-6 text-lg leading-relaxed text-dark-700">
-                  "{testimonial.quote}"
+                  &ldquo;{testimonial.quote}&rdquo;
                 </p>
                 <div className="flex items-center gap-3 border-t border-dark-500 pt-6">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-green-600 font-bold text-white">

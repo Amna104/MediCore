@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { getAvailableTimeSlots } from "@/lib/actions/availability.actions";
 
 export async function GET(

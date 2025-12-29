@@ -153,7 +153,7 @@ export function OTPVerification({
                 >
                   <h1 className="header mb-2">Verify Your Email</h1>
                   <p className="text-dark-700 text-16-regular">
-                    We've sent a verification code to
+                    We&apos;ve sent a verification code to
                   </p>
                   <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-dark-400 px-4 py-2 border border-dark-500">
                     <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -247,7 +247,7 @@ export function OTPVerification({
                 {/* Resend Section */}
                 <div className="flex items-center justify-between rounded-xl bg-dark-400 border border-dark-500 p-4">
                   <div>
-                    <p className="text-14-medium text-light-200">Didn't receive the code?</p>
+                    <p className="text-14-medium text-light-200">Didn&apos;t receive the code?</p>
                     <p className="text-12-regular text-dark-700">Check your spam folder</p>
                   </div>
                   <Button

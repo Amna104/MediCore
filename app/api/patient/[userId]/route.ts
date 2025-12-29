@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { getPatient } from "@/lib/actions/patient.actions";
 
 export async function GET(

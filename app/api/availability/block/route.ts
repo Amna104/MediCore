@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { blockDoctorSlot } from "@/lib/actions/availability.actions";
 
 export async function POST(request: Request) {

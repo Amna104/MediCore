@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { getRecentAppointmentList } from "@/lib/actions/appointment.actions";
 
 export async function GET() {

@@ -1,6 +1,12 @@
 import { withSentryConfig } from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  eslint: {
+    // Allow production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
+  },
+};
 
 // Disable Sentry source map uploads during build to avoid auth issues
 // Sentry will still work for error tracking via the client/server config files

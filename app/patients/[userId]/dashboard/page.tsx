@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { TestResults } from "@/components/TestResults";
-import { MedicalTimeline } from "@/components/MedicalTimeline";
 import { PrescriptionList } from "@/components/PrescriptionList";
+import { MedicalTimeline } from "@/components/MedicalTimeline";
+import { TestResults } from "@/components/TestResults";
 import { Button } from "@/components/ui/button";
 import { generateAppointmentPDF, generateAllAppointmentsPDF } from "@/lib/pdf-generator";
 
