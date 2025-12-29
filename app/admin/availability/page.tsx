@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import { DoctorCalendar } from "@/components/DoctorCalendar";
 import { Doctors } from "@/constants";
-import { Button } from "@/components/ui/button";
 
 export default function DoctorAvailabilityPage() {
   const [selectedDoctor, setSelectedDoctor] = useState(Doctors[0].name);

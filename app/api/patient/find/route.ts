@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { databases } from "@/lib/appwrite.config";
-import { DATABASE_ID, PATIENT_COLLECTION_ID } from "@/lib/appwrite.config";
 import { Query } from "node-appwrite";
+
+import { databases, DATABASE_ID, PATIENT_COLLECTION_ID } from "@/lib/appwrite.config";
 
 export async function POST(request: Request) {
   try {
@@ -43,4 +43,5 @@ export async function POST(request: Request) {
     );
   }
 }
+
 

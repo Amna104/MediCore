@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateOTP, storeOTP } from "@/lib/otp";
+
 import { sendOTPEmail } from "@/lib/email";
+import { generateOTP, storeOTP } from "@/lib/otp";
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,4 +53,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
 

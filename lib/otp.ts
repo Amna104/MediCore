@@ -1,6 +1,7 @@
 "use server";
 
 import { ID } from "node-appwrite";
+
 import { databases, DATABASE_ID } from "./appwrite.config";
 
 // OTP Collection ID - you'll need to create this collection in Appwrite

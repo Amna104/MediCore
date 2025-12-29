@@ -11,12 +11,12 @@ import {
   databases,
   messaging,
 } from "../appwrite.config";
-import { formatDateTime, parseStringify } from "../utils";
 import {
   sendAppointmentConfirmationEmail,
   sendAppointmentScheduledEmail,
   sendAppointmentCancellationEmail,
 } from "../email";
+import { formatDateTime, parseStringify } from "../utils";
 import { getPatient } from "./patient.actions";
 
 //  CREATE APPOINTMENT

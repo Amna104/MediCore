@@ -1,6 +1,7 @@
 "use server";
 
 import { ID, Query } from "node-appwrite";
+
 import {
   databases,
   DATABASE_ID,
@@ -277,4 +278,5 @@ export const isDoctorAvailable = async (
     return false;
   }
 };
+
 

@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+
 import { getOTPEmailTemplate } from "./email-templates/otp-template";
 
 // Initialize Resend with API key

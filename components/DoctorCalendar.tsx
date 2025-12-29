@@ -1,11 +1,11 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { motion } from "framer-motion";
 
 const locales = {
   "en-US": enUS,
@@ -99,7 +99,7 @@ export function DoctorCalendar({ doctorName, onSelectSlot }: DoctorCalendarProps
 
   const eventStyleGetter = (event: CalendarEvent) => {
     let backgroundColor = "#24AE7C"; // Green for available
-    let color = "#FFFFFF";
+    const color = "#FFFFFF";
 
     if (event.resource.type === "appointment") {
       if (event.resource.status === "scheduled") {
@@ -153,7 +153,7 @@ export function DoctorCalendar({ doctorName, onSelectSlot }: DoctorCalendarProps
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-24-bold text-light-200">
-            Dr. {doctorName}'s Schedule
+            Dr. {doctorName}&apos;s Schedule
           </h2>
           <button
             onClick={() => setLastFetch(Date.now())}

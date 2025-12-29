@@ -1,15 +1,15 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { generateAppointmentPDF, generateAllAppointmentsPDF } from "@/lib/pdf-generator";
-import { Button } from "@/components/ui/button";
+
+import { TestResults } from "@/components/TestResults";
 import { MedicalTimeline } from "@/components/MedicalTimeline";
 import { PrescriptionList } from "@/components/PrescriptionList";
-import { TestResults } from "@/components/TestResults";
+import { Button } from "@/components/ui/button";
+import { generateAppointmentPDF, generateAllAppointmentsPDF } from "@/lib/pdf-generator";
 
 interface Appointment {
   $id: string;
@@ -31,7 +31,6 @@ interface Patient {
 type TabType = "overview" | "timeline" | "prescriptions" | "tests";
 
 export default function PatientDashboard({ params }: { params: { userId: string } }) {
-  const router = useRouter();
   const [patient, setPatient] = useState<Patient | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);

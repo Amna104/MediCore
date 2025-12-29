@@ -12,15 +12,7 @@ const fadeInUp = {
   visible: { opacity: 1, y: 0 },
 };
 
-const fadeInLeft = {
-  hidden: { opacity: 0, x: -50 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const fadeInRight = {
-  hidden: { opacity: 0, x: 50 },
-  visible: { opacity: 1, x: 0 },
-};
+// Removed unused animation variants
 
 const scaleIn = {
   hidden: { opacity: 0, scale: 0.95 },

@@ -15,6 +15,7 @@ interface AppointmentData {
 }
 
 export const generateAppointmentPDF = (appointment: AppointmentData) => {
+  // eslint-disable-next-line new-cap
   const doc = new jsPDF();
 
   // Colors
@@ -192,6 +193,7 @@ export const generateAllAppointmentsPDF = (
   appointments: AppointmentData[],
   patientName: string
 ) => {
+  // eslint-disable-next-line new-cap
   const doc = new jsPDF();
 
   // Colors

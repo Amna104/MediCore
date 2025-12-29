@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import { Query } from "node-appwrite";
+
 import {
   databases,
   DATABASE_ID,
   APPOINTMENT_COLLECTION_ID,
   DOCTOR_BLOCKED_SLOTS_COLLECTION_ID,
 } from "@/lib/appwrite.config";
-import { Query } from "node-appwrite";
 
 export async function GET(
   request: Request,
@@ -51,4 +52,5 @@ export async function GET(
     );
   }
 }
+
 

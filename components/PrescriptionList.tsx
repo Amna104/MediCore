@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "./ui/button";
 
 interface Prescription {
   $id?: string;
@@ -117,4 +116,5 @@ export function PrescriptionList({ prescriptions }: PrescriptionListProps) {
     </div>
   );
 }
+
 

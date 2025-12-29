@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Button } from "./ui/button";
+import { useState, useEffect } from "react";
 
 interface TimeSlotPickerProps {
   doctorName: string;
@@ -217,4 +216,5 @@ export function TimeSlotPicker({
     </motion.div>
   );
 }
+
 

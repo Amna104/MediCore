@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -141,7 +142,7 @@ export default function PatientLoginPage() {
               {/* Register Link */}
               <div className="text-center space-y-4">
                 <p className="text-14-regular text-dark-700">
-                  Don't have an account yet?
+                  Don&apos;t have an account yet?
                 </p>
                 <Button
                   variant="outline"

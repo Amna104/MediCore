@@ -2,6 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
+
 import { OTPVerification } from "@/components/OTPVerification";
 import { createUser } from "@/lib/actions/patient.actions";
 
@@ -104,4 +105,5 @@ export default function VerifyEmailPage() {
     </Suspense>
   );
 }
+
 
