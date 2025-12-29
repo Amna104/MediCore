@@ -35,7 +35,7 @@ export function TimeSlotPicker({
     try {
       setIsLoading(true);
       const response = await fetch(
-        `/api/availability/${doctorName}/slots?date=${selectedDate.toISOString()}`
+        `/api/availability/${encodeURIComponent(doctorName)}/slots?date=${selectedDate.toISOString()}`
       );
       const data = await response.json();
 

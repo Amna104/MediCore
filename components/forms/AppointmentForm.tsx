@@ -13,7 +13,6 @@ import {
   createAppointment,
   updateAppointment,
 } from "@/lib/actions/appointment.actions";
-import { isDoctorAvailable } from "@/lib/actions/availability.actions";
 import { getAppointmentSchema } from "@/lib/validation";
 import { Appointment } from "@/types/appwrite.types";
 
@@ -80,16 +79,21 @@ export const AppointmentForm = ({
         // Validate availability before creating appointment
         const appointmentDateTime = new Date(values.schedule);
         
-        if (selectedDoctor && selectedTime) {
+        if (selectedDoctor && selectedDate && selectedTime) {
           const [hours, minutes] = selectedTime.split(":");
           appointmentDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
           
-          const isAvailable = await isDoctorAvailable(
-            values.primaryPhysician,
-            appointmentDateTime
+          // Re-check availability using the same API used by the TimeSlotPicker,
+          // so what the user sees matches what we validate at submit time.
+          const availabilityRes = await fetch(
+            `/api/availability/${encodeURIComponent(values.primaryPhysician)}/slots?date=${selectedDate.toISOString()}`
+          );
+          const availabilityData = await availabilityRes.json();
+          const slot = (availabilityData?.slots || []).find(
+            (s: { time: string; isAvailable: boolean }) => s.time === selectedTime
           );
 
-          if (!isAvailable) {
+          if (!slot?.isAvailable) {
             alert("This time slot is no longer available. Please select another time.");
             setIsLoading(false);
             return;
