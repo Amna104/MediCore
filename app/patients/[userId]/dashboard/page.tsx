@@ -163,14 +163,15 @@ export default function PatientDashboard({ params }: { params: { userId: string 
       <div className="flex flex-col flex-1 overflow-y-auto remove-scrollbar">
         {/* Header */}
         <header className="sticky top-0 z-20 flex items-center justify-between border-b border-dark-500 bg-dark-200 px-[5%] py-5 shadow-lg">
-          <Link href="/" className="cursor-pointer">
-            <Image
-              src="/assets/icons/logo-full.svg"
-              height={32}
-              width={162}
-              alt="logo"
-              className="h-8 w-fit"
-            />
+          <Link href="/" className="cursor-pointer group">
+            <h1 className="text-3xl font-bold tracking-tight">
+              <span className="bg-gradient-to-r from-green-400 via-green-500 to-emerald-500 bg-clip-text text-transparent transition-all duration-300 group-hover:from-green-300 group-hover:via-green-400 group-hover:to-emerald-400">
+                Medi
+              </span>
+              <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-500 bg-clip-text text-transparent transition-all duration-300 group-hover:from-blue-300 group-hover:via-blue-400 group-hover:to-cyan-400">
+                Core
+              </span>
+            </h1>
           </Link>
 
           <div className="flex items-center gap-3">
@@ -689,7 +690,7 @@ export default function PatientDashboard({ params }: { params: { userId: string 
         {/* Footer */}
         <footer className="border-t border-dark-500 py-6 px-[5%]">
           <p className="text-14-regular text-dark-700 text-center">
-            © 2025 CarePulse. All rights reserved.
+            © 2025 MediCore. All rights reserved.
           </p>
         </footer>
       </div>

@@ -112,7 +112,7 @@ export function OTPVerification({
           >
             {/* Logo Text Only */}
             <div className="mb-12">
-              <h2 className="text-24-bold text-light-200">CarePulse</h2>
+              <h2 className="text-24-bold text-light-200">MediCore</h2>
             </div>
 
             {/* Main Card */}
@@ -312,7 +312,7 @@ export function OTPVerification({
 
             {/* Copyright */}
             <p className="copyright py-12 text-center">
-              © 2025 CarePulse. All rights reserved.
+              © 2025 MediCore. All rights reserved.
             </p>
           </motion.div>
         </div>

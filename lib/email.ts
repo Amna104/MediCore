@@ -24,9 +24,9 @@ export const sendOTPEmail = async ({
     const recipientEmail = process.env.TEST_EMAIL || userEmail;
     
     const { data, error } = await resend.emails.send({
-      from: `CarePulse <${FROM_EMAIL}>`,
+      from: `MediCore <${FROM_EMAIL}>`,
       to: [recipientEmail],
-      subject: "Verify Your Email - CarePulse",
+      subject: "Verify Your Email - MediCore",
       html: getOTPEmailTemplate({
         userName,
         otp,
@@ -68,9 +68,9 @@ export const sendAppointmentConfirmationEmail = async ({
     const recipientEmail = process.env.TEST_EMAIL || patientEmail;
     
     const { data, error } = await resend.emails.send({
-      from: `CarePulse <${FROM_EMAIL}>`,
+      from: `MediCore <${FROM_EMAIL}>`,
       to: [recipientEmail],
-      subject: "Appointment Confirmation - CarePulse",
+      subject: "Appointment Confirmation - MediCore",
       html: getAppointmentConfirmationTemplate({
         patientName,
         doctorName,
@@ -114,9 +114,9 @@ export const sendAppointmentScheduledEmail = async ({
     const recipientEmail = process.env.TEST_EMAIL || patientEmail;
     
     const { data, error } = await resend.emails.send({
-      from: `CarePulse <${FROM_EMAIL}>`,
+      from: `MediCore <${FROM_EMAIL}>`,
       to: [recipientEmail],
-      subject: "Appointment Scheduled - CarePulse",
+      subject: "Appointment Scheduled - MediCore",
       html: getAppointmentScheduledTemplate({
         patientName,
         doctorName,
@@ -162,9 +162,9 @@ export const sendAppointmentCancellationEmail = async ({
     const recipientEmail = process.env.TEST_EMAIL || patientEmail;
     
     const { data, error } = await resend.emails.send({
-      from: `CarePulse <${FROM_EMAIL}>`,
+      from: `MediCore <${FROM_EMAIL}>`,
       to: [recipientEmail],
-      subject: "Appointment Cancelled - CarePulse",
+      subject: "Appointment Cancelled - MediCore",
       html: getAppointmentCancellationTemplate({
         patientName,
         doctorName,
@@ -217,7 +217,7 @@ function getAppointmentConfirmationTemplate({
                 <!-- Header -->
                 <tr>
                   <td style="background: linear-gradient(135deg, #24AE7C 0%, #79B5EC 100%); padding: 40px 20px; text-align: center;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">CarePulse</h1>
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">MediCore</h1>
                     <p style="margin: 10px 0 0 0; color: #ffffff; font-size: 16px;">Healthcare Made Simple</p>
                   </td>
                 </tr>
@@ -232,7 +232,7 @@ function getAppointmentConfirmationTemplate({
                     </p>
                     
                     <p style="margin: 0 0 20px 0; color: #76828D; font-size: 16px; line-height: 1.6;">
-                      Thank you for booking an appointment with CarePulse. We have received your appointment request and it is currently <strong style="color: #79B5EC;">pending confirmation</strong> from our admin team.
+                      Thank you for booking an appointment with MediCore. We have received your appointment request and it is currently <strong style="color: #79B5EC;">pending confirmation</strong> from our admin team.
                     </p>
                     
                     <!-- Appointment Details Box -->
@@ -293,7 +293,7 @@ function getAppointmentConfirmationTemplate({
                     
                     <p style="margin: 30px 0 0 0; color: #76828D; font-size: 14px;">
                       Best regards,<br>
-                      <strong>The CarePulse Team</strong>
+                      <strong>The MediCore Team</strong>
                     </p>
                   </td>
                 </tr>
@@ -302,7 +302,7 @@ function getAppointmentConfirmationTemplate({
                 <tr>
                   <td style="background-color: #0D0F10; padding: 30px; text-align: center;">
                     <p style="margin: 0 0 10px 0; color: #ABB8C4; font-size: 14px;">
-                      © ${new Date().getFullYear()} CarePulse. All rights reserved.
+                      © ${new Date().getFullYear()} MediCore. All rights reserved.
                     </p>
                     <p style="margin: 0; color: #76828D; font-size: 12px;">
                       Next-Generation Healthcare Management
@@ -428,7 +428,7 @@ function getAppointmentScheduledTemplate({
                     
                     <p style="margin: 30px 0 0 0; color: #76828D; font-size: 14px;">
                       Best regards,<br>
-                      <strong>The CarePulse Team</strong>
+                      <strong>The MediCore Team</strong>
                     </p>
                   </td>
                 </tr>
@@ -437,7 +437,7 @@ function getAppointmentScheduledTemplate({
                 <tr>
                   <td style="background-color: #0D0F10; padding: 30px; text-align: center;">
                     <p style="margin: 0 0 10px 0; color: #ABB8C4; font-size: 14px;">
-                      © ${new Date().getFullYear()} CarePulse. All rights reserved.
+                      © ${new Date().getFullYear()} MediCore. All rights reserved.
                     </p>
                     <p style="margin: 0; color: #76828D; font-size: 12px;">
                       Next-Generation Healthcare Management
@@ -573,7 +573,7 @@ function getAppointmentCancellationTemplate({
                     <p style="margin: 30px 0 0 0; color: #76828D; font-size: 14px;">
                       If you have any questions or concerns, please don't hesitate to contact us.<br><br>
                       Best regards,<br>
-                      <strong>The CarePulse Team</strong>
+                      <strong>The MediCore Team</strong>
                     </p>
                   </td>
                 </tr>
@@ -582,7 +582,7 @@ function getAppointmentCancellationTemplate({
                 <tr>
                   <td style="background-color: #0D0F10; padding: 30px; text-align: center;">
                     <p style="margin: 0 0 10px 0; color: #ABB8C4; font-size: 14px;">
-                      © ${new Date().getFullYear()} CarePulse. All rights reserved.
+                      © ${new Date().getFullYear()} MediCore. All rights reserved.
                     </p>
                     <p style="margin: 0; color: #76828D; font-size: 12px;">
                       Next-Generation Healthcare Management

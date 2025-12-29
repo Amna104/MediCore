@@ -83,13 +83,13 @@ const testimonials = [
   {
     name: "Sarah Anderson",
     role: "Regular Patient",
-    quote: "CarePulse has transformed how I manage my family's healthcare. The platform is intuitive, and the doctors are exceptional.",
+    quote: "MediCore has transformed how I manage my family's healthcare. The platform is intuitive, and the doctors are exceptional.",
     rating: 5,
   },
   {
     name: "Michael Chen",
     role: "Healthcare Professional",
-    quote: "As a physician, I appreciate the efficiency of CarePulse. It streamlines appointment management and improves patient care.",
+    quote: "As a physician, I appreciate the efficiency of MediCore. It streamlines appointment management and improves patient care.",
     rating: 5,
   },
   {
@@ -115,7 +115,7 @@ const faqs = [
   },
   {
     question: "What if I need emergency care?",
-    answer: "For medical emergencies, please call 911 or visit your nearest emergency room immediately. CarePulse is designed for scheduled appointments and non-emergency healthcare services.",
+    answer: "For medical emergencies, please call 911 or visit your nearest emergency room immediately. MediCore is designed for scheduled appointments and non-emergency healthcare services.",
   },
 ];
 
@@ -208,14 +208,15 @@ export default function Home() {
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/assets/icons/logo-full.svg"
-              height={32}
-              width={162}
-              alt="CarePulse"
-              className="h-8 w-fit"
-            />
+          <Link href="/" className="flex items-center group">
+            <h1 className="text-3xl font-bold tracking-tight">
+              <span className="bg-gradient-to-r from-green-400 via-green-500 to-emerald-500 bg-clip-text text-transparent transition-all duration-300 group-hover:from-green-300 group-hover:via-green-400 group-hover:to-emerald-400">
+                Medi
+              </span>
+              <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-500 bg-clip-text text-transparent transition-all duration-300 group-hover:from-blue-300 group-hover:via-blue-400 group-hover:to-cyan-400">
+                Core
+              </span>
+            </h1>
           </Link>
 
           {/* Desktop Navigation */}
@@ -926,7 +927,7 @@ export default function Home() {
                 Ready to Get Started?
               </h2>
               <p className="mb-8 text-xl text-white/90">
-                Join thousands of patients who trust CarePulse for their healthcare needs
+                Join thousands of patients who trust MediCore for their healthcare needs
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link
@@ -966,13 +967,14 @@ export default function Home() {
           <div className="mb-12 grid gap-8 md:grid-cols-4">
             {/* Branding */}
             <div className="md:col-span-1">
-              <Image
-                src="/assets/icons/logo-full.svg"
-                height={32}
-                width={162}
-                alt="CarePulse"
-                className="mb-4 h-8 w-fit"
-              />
+              <h2 className="mb-4 text-3xl font-bold tracking-tight">
+                <span className="bg-gradient-to-r from-green-400 via-green-500 to-emerald-500 bg-clip-text text-transparent">
+                  Medi
+                </span>
+                <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-500 bg-clip-text text-transparent">
+                  Core
+                </span>
+              </h2>
               <p className="text-sm leading-relaxed text-dark-700">
                 Next-generation healthcare management platform for better patient care
               </p>
@@ -1045,7 +1047,7 @@ export default function Home() {
           <div className="border-t border-dark-500 pt-8">
             <div className="flex items-center justify-center">
               <p className="text-sm text-dark-700">
-                © 2025 CarePulse. All rights reserved.
+                © 2025 MediCore. All rights reserved.
               </p>
             </div>
           </div>

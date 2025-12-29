@@ -159,14 +159,15 @@ const AdminPage = () => {
       <header className="sticky top-0 z-50 border-b border-dark-500 bg-dark-300/95 backdrop-blur-xl shadow-lg">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-8 py-4">
           <div className="flex items-center gap-8">
-            <Link href="/" className="cursor-pointer">
-              <Image
-                src="/assets/icons/logo-full.svg"
-                height={32}
-                width={162}
-                alt="CarePulse"
-                className="h-8 w-fit"
-              />
+            <Link href="/" className="cursor-pointer group">
+              <h1 className="text-3xl font-bold tracking-tight">
+                <span className="bg-gradient-to-r from-green-400 via-green-500 to-emerald-500 bg-clip-text text-transparent transition-all duration-300 group-hover:from-green-300 group-hover:via-green-400 group-hover:to-emerald-400">
+                  Medi
+                </span>
+                <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-500 bg-clip-text text-transparent transition-all duration-300 group-hover:from-blue-300 group-hover:via-blue-400 group-hover:to-cyan-400">
+                  Core
+                </span>
+              </h1>
             </Link>
             <div className="hidden items-center gap-2 rounded-full bg-green-500/10 px-4 py-1.5 md:flex">
               <span className="relative flex h-2 w-2">

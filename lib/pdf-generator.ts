@@ -29,7 +29,7 @@ export const generateAppointmentPDF = (appointment: AppointmentData) => {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(24);
   doc.setFont("helvetica", "bold");
-  doc.text("CarePulse", 20, 20);
+  doc.text("MediCore", 20, 20);
 
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
@@ -170,7 +170,7 @@ export const generateAppointmentPDF = (appointment: AppointmentData) => {
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.text(
-    "© 2025 CarePulse Healthcare Management System",
+    "© 2025 MediCore Healthcare Management System",
     105,
     pageHeight - 12,
     { align: "center" }
@@ -205,7 +205,7 @@ export const generateAllAppointmentsPDF = (
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(24);
   doc.setFont("helvetica", "bold");
-  doc.text("CarePulse", 20, 18);
+  doc.text("MediCore", 20, 18);
 
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
@@ -299,7 +299,7 @@ export const generateAllAppointmentsPDF = (
 
   doc.setTextColor(238, 238, 238);
   doc.setFontSize(9);
-  doc.text("© 2025 CarePulse", 105, pageHeight - 7, { align: "center" });
+  doc.text("© 2025 MediCore", 105, pageHeight - 7, { align: "center" });
 
   // Generate filename
   const filename = `appointment_history_${patientName

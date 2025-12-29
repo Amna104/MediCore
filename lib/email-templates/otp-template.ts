@@ -1,5 +1,5 @@
 /**
- * OTP Email Template for CarePulse
+ * OTP Email Template for MediCore
  * This template generates the HTML for OTP verification emails
  */
 
@@ -30,21 +30,21 @@ export function getOTPEmailTemplate({
                       <span style="font-size: 40px; color: white;">🔐</span>
                     </div>
                     <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Email Verification</h1>
-                    <p style="margin: 10px 0 0 0; color: #ffffff; font-size: 16px;">CarePulse Healthcare</p>
+                    <p style="margin: 10px 0 0 0; color: #ffffff; font-size: 16px;">MediCore Healthcare</p>
                   </td>
                 </tr>
                 
                 <!-- Content -->
                 <tr>
                   <td style="padding: 40px 30px;">
-                    <h2 style="margin: 0 0 20px 0; color: #0D0F10; font-size: 24px;">Welcome to CarePulse!</h2>
+                    <h2 style="margin: 0 0 20px 0; color: #0D0F10; font-size: 24px;">Welcome to MediCore!</h2>
                     
                     <p style="margin: 0 0 20px 0; color: #76828D; font-size: 16px; line-height: 1.6;">
                       Hi ${userName},
                     </p>
                     
                     <p style="margin: 0 0 20px 0; color: #76828D; font-size: 16px; line-height: 1.6;">
-                      Thank you for registering with CarePulse. To complete your registration and ensure the security of your account, please verify your email address using the OTP below.
+                      Thank you for registering with MediCore. To complete your registration and ensure the security of your account, please verify your email address using the OTP below.
                     </p>
                     
                     <!-- OTP Box -->
@@ -79,13 +79,13 @@ export function getOTPEmailTemplate({
                     <!-- Security Note -->
                     <div style="background-color: #fef2f2; border-left: 4px solid #DC2626; padding: 15px; margin: 30px 0; border-radius: 4px;">
                       <p style="margin: 0; color: #991b1b; font-size: 14px; line-height: 1.6;">
-                        <strong>⚠️ Security Reminder:</strong> Never share this code with anyone. CarePulse staff will never ask for your verification code.
+                        <strong>⚠️ Security Reminder:</strong> Never share this code with anyone. MediCore staff will never ask for your verification code.
                       </p>
                     </div>
                     
                     <p style="margin: 30px 0 0 0; color: #76828D; font-size: 14px;">
                       Best regards,<br>
-                      <strong>The CarePulse Team</strong>
+                      <strong>The MediCore Team</strong>
                     </p>
                   </td>
                 </tr>
@@ -94,7 +94,7 @@ export function getOTPEmailTemplate({
                 <tr>
                   <td style="background-color: #0D0F10; padding: 30px; text-align: center;">
                     <p style="margin: 0 0 10px 0; color: #ABB8C4; font-size: 14px;">
-                      © ${new Date().getFullYear()} CarePulse. All rights reserved.
+                      © ${new Date().getFullYear()} MediCore. All rights reserved.
                     </p>
                     <p style="margin: 0; color: #76828D; font-size: 12px;">
                       Next-Generation Healthcare Management

@@ -52,14 +52,15 @@ export default function DoctorAvailabilityPage() {
       <div className="flex flex-col flex-1 overflow-y-auto remove-scrollbar">
         {/* Header */}
         <header className="admin-header">
-          <Link href="/" className="cursor-pointer">
-            <Image
-              src="/assets/icons/logo-full.svg"
-              height={32}
-              width={162}
-              alt="logo"
-              className="h-8 w-fit"
-            />
+          <Link href="/" className="cursor-pointer group">
+            <h1 className="text-3xl font-bold tracking-tight">
+              <span className="bg-gradient-to-r from-green-400 via-green-500 to-emerald-500 bg-clip-text text-transparent transition-all duration-300 group-hover:from-green-300 group-hover:via-green-400 group-hover:to-emerald-400">
+                Medi
+              </span>
+              <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-500 bg-clip-text text-transparent transition-all duration-300 group-hover:from-blue-300 group-hover:via-blue-400 group-hover:to-cyan-400">
+                Core
+              </span>
+            </h1>
           </Link>
 
           <div className="flex items-center gap-4">
