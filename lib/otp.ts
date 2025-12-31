@@ -7,6 +7,11 @@ import { databases, DATABASE_ID } from "./appwrite.config";
 // OTP Collection ID - you'll need to create this collection in Appwrite
 const OTP_COLLECTION_ID = process.env.OTP_COLLECTION_ID;
 
+function assertOtpEnv() {
+  if (!DATABASE_ID) throw new Error("Missing DATABASE_ID env var (Appwrite).");
+  if (!OTP_COLLECTION_ID) throw new Error("Missing OTP_COLLECTION_ID env var (Appwrite).");
+}
+
 /**
  * Generate a 6-digit OTP
  * This is a utility function, not exported directly to client
@@ -28,6 +33,8 @@ export async function generateOTP(): Promise<string> {
  */
 export async function storeOTP(email: string, otp: string) {
   try {
+    assertOtpEnv();
+
     // Calculate expiration time (10 minutes from now)
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
@@ -59,6 +66,8 @@ export async function storeOTP(email: string, otp: string) {
  */
 export async function verifyOTP(email: string, otp: string) {
   try {
+    assertOtpEnv();
+
     // Find OTP document for this email
     const response = await databases.listDocuments(
       DATABASE_ID!,
@@ -120,6 +129,8 @@ export async function verifyOTP(email: string, otp: string) {
  */
 async function deleteOTPByEmail(email: string) {
   try {
+    assertOtpEnv();
+
     const response = await databases.listDocuments(
       DATABASE_ID!,
       OTP_COLLECTION_ID!,
@@ -144,6 +155,8 @@ async function deleteOTPByEmail(email: string) {
  */
 export async function isEmailVerified(email: string): Promise<boolean> {
   try {
+    assertOtpEnv();
+
     const response = await databases.listDocuments(
       DATABASE_ID!,
       OTP_COLLECTION_ID!,
@@ -170,6 +183,8 @@ export async function isEmailVerified(email: string): Promise<boolean> {
  */
 export async function resendOTP(email: string) {
   try {
+    assertOtpEnv();
+
     // Check if there's a recent OTP (within last 1 minute)
     const response = await databases.listDocuments(
       DATABASE_ID!,

@@ -2,8 +2,9 @@ import { Resend } from "resend";
 
 import { getOTPEmailTemplate } from "./email-templates/otp-template";
 
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY || "dummy_key_for_dev");
+// Initialize Resend with API key (avoid dummy keys in production)
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 // Email configuration
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
@@ -21,6 +22,13 @@ export const sendOTPEmail = async ({
   otp: string;
 }) => {
   try {
+    if (!resend) {
+      return {
+        success: false,
+        error: new Error("RESEND_API_KEY is not set. Configure it in your environment."),
+      };
+    }
+
     // Use TEST_EMAIL for development if set
     const recipientEmail = process.env.TEST_EMAIL || userEmail;
     

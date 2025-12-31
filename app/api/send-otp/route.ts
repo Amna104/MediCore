@@ -22,7 +22,11 @@ export async function POST(request: NextRequest) {
 
     if (!storeResult.success) {
       return NextResponse.json(
-        { success: false, message: "Failed to store OTP" },
+        {
+          success: false,
+          message:
+            "Failed to store OTP. Check Appwrite env vars and OTP_COLLECTION_ID in Vercel.",
+        },
         { status: 500 }
       );
     }
@@ -36,7 +40,11 @@ export async function POST(request: NextRequest) {
 
     if (!emailResult.success) {
       return NextResponse.json(
-        { success: false, message: "Failed to send OTP email" },
+        {
+          success: false,
+          message:
+            "Failed to send OTP email. Check RESEND_API_KEY / RESEND_FROM_EMAIL in Vercel.",
+        },
         { status: 500 }
       );
     }
@@ -48,7 +56,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error in send-otp API:", error);
     return NextResponse.json(
-      { success: false, message: "Internal server error" },
+      {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Internal server error",
+      },
       { status: 500 }
     );
   }
