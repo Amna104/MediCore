@@ -11,7 +11,8 @@ function VerifyEmailContent() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
-  const email = searchParams.get("email");
+  const email = searchParams.get("email"); // Email that received OTP (might be TEST_EMAIL)
+  const originalEmail = searchParams.get("originalEmail") || email; // Original email for user creation
   const name = searchParams.get("name");
   const phone = searchParams.get("phone");
 
@@ -25,12 +26,12 @@ function VerifyEmailContent() {
   }, [email, name, phone, router]);
 
   const handleVerified = async () => {
-    if (!email || !name || !phone) return;
+    if (!originalEmail || !name || !phone) return;
 
     try {
       const user = {
         name,
-        email,
+        email: originalEmail, // Use original email for user creation
         phone,
       };
 
@@ -46,7 +47,7 @@ function VerifyEmailContent() {
   };
 
   const handleResend = async () => {
-    if (!email || !name) {
+    if (!originalEmail || !name) {
       return { success: false, message: "Missing user information" };
     }
 
@@ -55,7 +56,7 @@ function VerifyEmailContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email,
+          email: originalEmail, // Use original email for resend
           userName: name,
         }),
       });
@@ -81,7 +82,7 @@ function VerifyEmailContent() {
 
   return (
     <OTPVerification
-      email={email}
+      email={email} // Use the email that received OTP for verification
       userName={name}
       onVerified={handleVerified}
       onResend={handleResend}

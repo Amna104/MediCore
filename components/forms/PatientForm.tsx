@@ -45,9 +45,13 @@ export const PatientForm = () => {
       const data = await response.json();
 
       if (data.success) {
+        // Use the email returned from API (might be TEST_EMAIL if configured)
+        const verificationEmail = data.email || values.email;
+        
         // Redirect to OTP verification page with user data
         const params = new URLSearchParams({
-          email: values.email,
+          email: verificationEmail, // Use the actual email that received the OTP
+          originalEmail: values.email, // Keep original for user creation
           name: values.name,
           phone: values.phone,
         });
