@@ -16,6 +16,7 @@ import SubmitButton from "../SubmitButton";
 export const PatientForm = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const form = useForm<z.infer<typeof UserFormValidation>>({
     resolver: zodResolver(UserFormValidation),
@@ -28,40 +29,46 @@ export const PatientForm = () => {
 
   const onSubmit = async (values: z.infer<typeof UserFormValidation>) => {
     setIsLoading(true);
+    setError(""); // Clear any previous errors
 
     try {
-      // Call API to send OTP
-      const response = await fetch("/api/send-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: values.name,
-          email: values.email,
-        }),
-      });
+      // Import createUser dynamically to avoid server action issues
+      const { createUser } = await import("@/lib/actions/patient.actions");
+      
+      // Create user directly without OTP verification
+      const user = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+      };
 
-      const data = await response.json();
+      const newUser = await createUser(user);
 
-      if (data.success) {
-        // Use the email returned from API (might be TEST_EMAIL if configured)
-        const verificationEmail = data.email || values.email;
+      if (newUser) {
+        // Check if this is an existing user (will have additional properties)
+        const isExistingUser = newUser.emailVerification !== undefined;
         
-        // Redirect to OTP verification page with user data
-        const params = new URLSearchParams({
-          email: verificationEmail, // Use the actual email that received the OTP
-          originalEmail: values.email, // Keep original for user creation
-          name: values.name,
-          phone: values.phone,
-        });
-        router.push(`/verify-email?${params.toString()}`);
+        if (isExistingUser && newUser.name !== values.name) {
+          // Email exists but belongs to different user
+          setError("This email is already registered. Please use a different email or login with your existing account.");
+          setIsLoading(false);
+          return;
+        }
+        
+        // Redirect directly to registration page
+        router.push(`/patients/${newUser.$id}/register`);
       } else {
-        alert(data.message || "Failed to send verification code. Please try again.");
+        setError("Failed to create user. Please try again.");
       }
-    } catch (error) {
-      console.log("Error sending OTP:", error);
-      alert("Failed to send verification code. Please try again.");
+    } catch (error: any) {
+      console.error("Error creating user:", error);
+      
+      // Check if error message indicates duplicate email
+      if (error.message && error.message.includes("already registered")) {
+        setError(error.message);
+      } else {
+        setError("Failed to create account. Please try again.");
+      }
     }
 
     setIsLoading(false);
@@ -74,6 +81,21 @@ export const PatientForm = () => {
           <h1 className="header">Hi there 👋</h1>
           <p className="text-dark-700">Get started with appointments.</p>
         </section>
+
+        {error && (
+          <div className="rounded-md bg-red-50 p-4 mb-6">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-red-800">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <CustomFormField
           fieldType={FormFieldType.INPUT}

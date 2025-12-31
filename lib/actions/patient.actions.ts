@@ -19,7 +19,7 @@ export const createUser = async (user: CreateUserParams) => {
   try {
     console.log("Creating Appwrite user:", { email: user.email, name: user.name, phone: user.phone });
     
-    // Create new user -> https://appwrite.io/docs/references/1.5.x/server-nodejs/users#create
+    // Try to create new user -> https://appwrite.io/docs/references/1.5.x/server-nodejs/users#create
     const newuser = await users.create(
       ID.unique(),
       user.email,
@@ -33,43 +33,69 @@ export const createUser = async (user: CreateUserParams) => {
   } catch (error: any) {
     console.error("Error creating user:", error);
     
-    // Check existing user
+    // Check if user already exists (409 conflict)
     if (error && error?.code === 409) {
-      console.log("User already exists (409 conflict), searching for existing user by email:", user.email);
+      console.log("User already exists (409 conflict), searching...");
       
       try {
-        // Search for user by email - note: users.list() searches across all fields
-        const existingUser = await users.list([
-          Query.equal("email", user.email),
-        ]);
-
-        console.log("Search results:", existingUser.total, "users found");
+        // Search with larger limit and proper queries
+        const searchQueries = [Query.equal("email", user.email.toLowerCase())];
         
-        if (existingUser && existingUser.users && existingUser.users.length > 0) {
-          console.log("Found existing user:", existingUser.users[0].$id);
-          return parseStringify(existingUser.users[0]);
-        } else {
-          // If query fails, try searching all users and filter manually
-          console.log("Query didn't work, trying manual search...");
-          const allUsers = await users.list();
-          const foundUser = allUsers.users.find(u => u.email === user.email);
-          
-          if (foundUser) {
-            console.log("Found user via manual search:", foundUser.$id);
-            return parseStringify(foundUser);
+        let foundUser = null;
+        
+        // Try searching with query first
+        try {
+          const searchResult = await users.list(searchQueries);
+          console.log(`Query search found ${searchResult.total} users`);
+          if (searchResult.users.length > 0) {
+            foundUser = searchResult.users[0];
           }
-          
-          console.error("User exists (409) but couldn't find it anywhere");
-          throw new Error("User exists but couldn't be retrieved. Please contact support.");
+        } catch (queryError) {
+          console.log("Query search failed, trying manual search:", queryError);
         }
-      } catch (searchError) {
-        console.error("Error searching for existing user:", searchError);
-        throw new Error("Failed to retrieve existing user. Please contact support.");
+        
+        // If query didn't work, try getting all users with higher limit
+        if (!foundUser) {
+          const allUsers = await users.list([], 500); // Get up to 500 users
+          console.log(`Manual search through ${allUsers.total} users (returned ${allUsers.users.length})`);
+          
+          foundUser = allUsers.users.find(u => {
+            const matches = u.email?.toLowerCase() === user.email.toLowerCase();
+            if (matches) {
+              console.log("Found matching user:", u.$id, u.email);
+            }
+            return matches;
+          });
+        }
+        
+        if (foundUser) {
+          console.log("Returning existing user:", foundUser.$id);
+          return parseStringify(foundUser);
+        }
+        
+        // If we still can't find the user, the email might be associated with a different identifier
+        console.error("User exists (409) but not found in search. Email:", user.email);
+        throw new Error(
+          "This email is already registered. Please use a different email address."
+        );
+      } catch (searchError: any) {
+        console.error("Error during user search:", searchError);
+        
+        // If the search error is our custom message, re-throw it
+        if (searchError.message?.includes("already registered")) {
+          throw searchError;
+        }
+        
+        // Otherwise, give a generic error
+        throw new Error(
+          "This email may already be in use. Please try a different email."
+        );
       }
     }
     
-    console.error("An error occurred while creating a new user:", error);
-    throw error; // Re-throw the error so the caller knows it failed
+    // For other errors, throw a generic message
+    console.error("Unexpected error creating user:", error);
+    throw new Error("Failed to create account. Please try again.");
   }
 };
 
