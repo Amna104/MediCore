@@ -1,6 +1,6 @@
 "use server";
 
-import { ID } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 
 import { databases, DATABASE_ID } from "./appwrite.config";
 
@@ -68,16 +68,24 @@ export async function verifyOTP(email: string, otp: string) {
   try {
     assertOtpEnv();
 
-    // Find OTP document for this email
+    console.log("Verifying OTP for email:", email.toLowerCase());
+
+    // Find OTP document for this email with proper query
     const response = await databases.listDocuments(
       DATABASE_ID!,
       OTP_COLLECTION_ID!,
       [
-        // Query for matching email and OTP
+        Query.equal("email", email.toLowerCase()),
+        Query.equal("verified", false),
+        Query.orderDesc("$createdAt"),
+        Query.limit(1),
       ]
     );
 
+    console.log("Found OTP documents:", response.documents.length);
+
     if (response.documents.length === 0) {
+      console.log("No OTP found for email:", email.toLowerCase());
       return { success: false, message: "Invalid or expired OTP" };
     }
 
@@ -86,15 +94,25 @@ export async function verifyOTP(email: string, otp: string) {
       otp?: string;
       expiresAt?: string;
       verified?: boolean;
+      email?: string;
     };
+
+    console.log("OTP Document:", {
+      email: otpDoc.email,
+      otp: otpDoc.otp ? "***" : "missing",
+      expiresAt: otpDoc.expiresAt,
+      verified: otpDoc.verified,
+    });
 
     // Check if OTP matches
     if (!otpDoc.otp || otpDoc.otp !== otp) {
+      console.log("OTP mismatch. Expected:", otpDoc.otp, "Got:", otp);
       return { success: false, message: "Invalid OTP" };
     }
 
     // Check if OTP is expired
     if (!otpDoc.expiresAt || new Date(otpDoc.expiresAt) < new Date()) {
+      console.log("OTP expired at:", otpDoc.expiresAt);
       // Delete expired OTP
       await databases.deleteDocument(
         DATABASE_ID!,
@@ -106,6 +124,7 @@ export async function verifyOTP(email: string, otp: string) {
 
     // Check if already verified
     if (otpDoc.verified) {
+      console.log("OTP already used");
       return { success: false, message: "OTP already used" };
     }
 
@@ -117,6 +136,7 @@ export async function verifyOTP(email: string, otp: string) {
       { verified: true }
     );
 
+    console.log("OTP verified successfully for:", email);
     return { success: true, message: "Email verified successfully" };
   } catch (error) {
     console.error("Error verifying OTP:", error);
