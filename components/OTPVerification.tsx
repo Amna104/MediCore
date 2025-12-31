@@ -50,7 +50,9 @@ export function OTPVerification({
 
       if (data.success) {
         setSuccess("Email verified successfully!");
+        console.log("OTP verified, calling onVerified in 1 second...");
         setTimeout(() => {
+          console.log("Calling onVerified callback now");
           onVerified();
         }, 1000);
       } else {

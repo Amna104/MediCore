@@ -28,6 +28,8 @@ function VerifyEmailContent() {
   const handleVerified = async () => {
     if (!originalEmail || !name || !phone) return;
 
+    console.log("handleVerified called with:", { originalEmail, name, phone });
+
     try {
       const user = {
         name,
@@ -35,10 +37,16 @@ function VerifyEmailContent() {
         phone,
       };
 
+      console.log("Creating user:", user);
       const newUser = await createUser(user);
+      console.log("User created:", newUser);
 
       if (newUser) {
+        console.log("Redirecting to:", `/patients/${newUser.$id}/register`);
         router.push(`/patients/${newUser.$id}/register`);
+      } else {
+        console.error("createUser returned null/undefined");
+        alert("Failed to create user. Please try again.");
       }
     } catch (error) {
       console.error("Error creating user:", error);
