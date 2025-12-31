@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test OTP API</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .error {
+      background: #fee;
+      border: 1px solid #f88;
+      color: #c00;
+    }
+    .success {
+      background: #efe;
+      border: 1px solid #8f8;
+      color: #080;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #24AE7C;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1e9968;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test OTP API on Vercel</h1>
+  
+  <label for="email">Email:</label>
+  <input type="email" id="email" placeholder="test@example.com" style="width: 100%; padding: 8px; margin: 10px 0;">
+  
+  <label for="name">Name:</label>
+  <input type="text" id="name" placeholder="Test User" style="width: 100%; padding: 8px; margin: 10px 0;">
+  
+  <button onclick="testOTP()">Send OTP</button>
+  
+  <div id="result"></div>
+
+  <script>
+    async function testOTP() {
+      const resultDiv = document.getElementById('result');
+      const email = document.getElementById('email').value || 'test@example.com';
+      const name = document.getElementById('name').value || 'Test User';
+      
+      resultDiv.innerHTML = '<p>Sending OTP...</p>';
+      
+      try {
+        const response = await fetch('https://medicore1.vercel.app/api/send-otp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, email })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+          resultDiv.innerHTML = `
+            <div class="result success">
+              <h3>✅ Success!</h3>
+              <p>${data.message}</p>
+              <pre>${JSON.stringify(data, null, 2)}</pre>
+            </div>
+          `;
+        } else {
+          resultDiv.innerHTML = `
+            <div class="result error">
+              <h3>❌ Error ${response.status}</h3>
+              <p><strong>Message:</strong> ${data.message || 'Unknown error'}</p>
+              <pre>${JSON.stringify(data, null, 2)}</pre>
+            </div>
+          `;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="result error">
+            <h3>❌ Network Error</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
+
