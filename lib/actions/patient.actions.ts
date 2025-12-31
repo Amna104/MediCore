@@ -35,17 +35,36 @@ export const createUser = async (user: CreateUserParams) => {
     
     // Check existing user
     if (error && error?.code === 409) {
-      console.log("User already exists, fetching existing user...");
-      const existingUser = await users.list([
-        Query.equal("email", [user.email]),
-      ]);
+      console.log("User already exists (409 conflict), searching for existing user by email:", user.email);
+      
+      try {
+        // Search for user by email - note: users.list() searches across all fields
+        const existingUser = await users.list([
+          Query.equal("email", user.email),
+        ]);
 
-      if (existingUser && existingUser.users && existingUser.users.length > 0) {
-        console.log("Found existing user:", existingUser.users[0].$id);
-        return parseStringify(existingUser.users[0]);
-      } else {
-        console.error("User exists but couldn't find it in the list");
-        throw new Error("User exists but couldn't be retrieved");
+        console.log("Search results:", existingUser.total, "users found");
+        
+        if (existingUser && existingUser.users && existingUser.users.length > 0) {
+          console.log("Found existing user:", existingUser.users[0].$id);
+          return parseStringify(existingUser.users[0]);
+        } else {
+          // If query fails, try searching all users and filter manually
+          console.log("Query didn't work, trying manual search...");
+          const allUsers = await users.list();
+          const foundUser = allUsers.users.find(u => u.email === user.email);
+          
+          if (foundUser) {
+            console.log("Found user via manual search:", foundUser.$id);
+            return parseStringify(foundUser);
+          }
+          
+          console.error("User exists (409) but couldn't find it anywhere");
+          throw new Error("User exists but couldn't be retrieved. Please contact support.");
+        }
+      } catch (searchError) {
+        console.error("Error searching for existing user:", searchError);
+        throw new Error("Failed to retrieve existing user. Please contact support.");
       }
     }
     
