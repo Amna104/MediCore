@@ -6,6 +6,8 @@ export async function POST(request: NextRequest) {
   try {
     const { email, otp } = await request.json();
 
+    console.log("Verify OTP request:", { email, otp: otp ? "***" : "missing" });
+
     if (!email || !otp) {
       return NextResponse.json(
         { success: false, message: "Email and OTP are required" },
@@ -14,6 +16,8 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await verifyOTP(email, otp);
+
+    console.log("Verify OTP result:", { success: result.success, message: result.message });
 
     if (result.success) {
       return NextResponse.json({

@@ -26,11 +26,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // If TEST_EMAIL is set, use it for both storage and sending
+    // This ensures OTP verification works with the email that received the OTP
+    const actualEmail = process.env.TEST_EMAIL || email;
+
+    console.log(`Sending OTP to ${actualEmail} (original: ${email})`);
+
     // Generate OTP
     const otp = await generateOTP();
 
-    // Store OTP in database
-    const storeResult = await storeOTP(email, otp);
+    // Store OTP with the ACTUAL email that will receive it
+    const storeResult = await storeOTP(actualEmail, otp);
 
     if (!storeResult.success) {
       console.error("Failed to store OTP:", storeResult.error);
@@ -45,10 +51,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send OTP email
+    // Send OTP email (it will also use TEST_EMAIL internally if set)
     const emailResult = await sendOTPEmail({
       userName: name,
-      userEmail: email,
+      userEmail: email, // Original email for display in email body
       otp,
     });
 
@@ -58,7 +64,7 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           message:
-            "Failed to send OTP email. Check RESEND_API_KEY / RESEND_FROM_EMAIL in Vercel.",
+            "Failed to send OTP email. Check GMAIL_USER / GMAIL_APP_PASSWORD in environment.",
           details: emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error),
         },
         { status: 500, headers: corsHeaders }
@@ -69,6 +75,8 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         message: "OTP sent successfully",
+        // Return the actual email so frontend knows which email to verify
+        email: actualEmail,
       },
       { headers: corsHeaders }
     );
